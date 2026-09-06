@@ -33,6 +33,7 @@ conversation. Git-commit it after every round: crash-safe and resumable.
 - `visited.md` — every fetched URL + verdict (KEEP/DROP/FAIL); check before any fetch.
 - `evidence/NN-<diver>.md` — per-diver ledgers, one file per diver per round.
 - `state.md` — machine-readable counters (schema below). Update it at the end of every round. Anything that reports progress reads this file.
+- `decisions.md` — every user decision and correction, appended by the coordinator unasked the moment it happens. Memory that needs user effort never happens; memory the system keeps does.
 
 `state.md` schema (`key: value`, one per line):
 
@@ -117,6 +118,7 @@ The loop CANNOT stop while any must-answer has zero kept claims — unless two c
 
 - **Saturation stop**: a full round adds <10% new KEPT claims AND every must-answer is covered. Set `status: complete`, print the 100% line, go to Phase 6.
 - **Stall rule**: frontier repeats the same queries twice → force rephrasing (new angles, `site:` variants, adjacent jargon) before respawning. Never spin idle rounds to look busy.
+- **Split-debug**: when a finding looks wrong, first classify retrieval-miss (right question, wrong pages) vs hallucination-despite-context (right pages, wrong synthesis) — then respawn new queries for the former and tighten synthesis for the latter. Never just “search more.”
 - **Interrupt wins**: user says stop → finish the round, report from kept claims, gaps for the rest. Still uncovered at any stop → `## Gaps`, never invent.
 
 ## Phase 6 — Report + end log

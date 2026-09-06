@@ -238,6 +238,15 @@ token (repository access to this repo, Contents read/write, Pull requests
 read/write), save it as the `ACTIONS_BOT_TOKEN` repo secret, and the bot
 uses it instead — CI then runs unapproved and merges finish themselves.
 
+## New MCP servers (contributors)
+
+Before bundling another server, all four must hold: free tier with no
+account wall for the operations divers use; tool descriptions short and
+non-overlapping with existing servers; a live handshake verified locally
+(`tools/list` plus one real call); quarterly token audit of every
+`.mcp.json` flavor — 21k tokens of tool definitions once ate a tenth of
+a flagship context window, and that bill compounds per server.
+
 ## Honest notes
 
 - Fully tested on **OMP** (skill, command, and both servers verified
