@@ -107,6 +107,7 @@ readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
 check("token audit" in readme_text, "readme carries the MCP checklist")
 check("turns_this_round" in skill_text, "skill tracks turns per round")
 check("sequential_only" in (ROOT / "agents/research-planner.md").read_text(encoding="utf-8"), "planner marks sequential queries")
+check((ROOT / "evals/README.md").exists() and (ROOT / "evals/seed-questions.md").exists(), "evals loop and seed set exist")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)
