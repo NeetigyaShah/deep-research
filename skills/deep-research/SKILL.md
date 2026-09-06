@@ -67,10 +67,12 @@ Percent = `0.7 × kept/target + 0.3 × frontier_done/(done+pending)`, whole perc
 
 Bar = 20 cells, filled = round(percent/5). `scripts/progress.py research/<slug>` prints the same line from `state.md` — run it anytime, in any harness, for a live reading without waking the coordinator.
 
-## Phase 0 — Intake (no tools yet)
+## Phase 0 — Prerequisites & Intake
 
-User gives a topic. Do NOT search. Do NOT state facts. Go to Phase 1.
-
+1. **MCP Gate Check**: Verify that all 4 MCP servers (`arxiv`, `ddg-search`, `gutenberg`, `openalex`) are configured and available in your harness (`python scripts/check_mcp.py` can verify this). If even ONE MCP server or runtime (`uvx`, `npx`) is missing, STOP immediately and say to the user:
+   "The deep-research plugin requires 4 MCP servers (arxiv, ddg-search, gutenberg, openalex). Missing: [<missing items>]. First install this, only then will deep-research work."
+   Provide the installation command and refuse to start Phase 1 until resolved.
+2. User gives a topic. Do NOT search. Do NOT state facts. Go to Phase 1.
 ## Phase 1 — Grill + mirror (assert zero facts)
 
 Interview relentlessly until a shared understanding exists. Work the decision
@@ -107,7 +109,7 @@ Produce query packs from the Brief (no searching yourself):
 
 Shared context = Research Brief + evidence-ledger schema. The coordinator assigns each diver a 2-letter prefix (WA, WB, AA, BK…); every ledger entry is tagged with a ledger ID unique per run (`WA1`, `AA3`…), recorded in its evidence file. Spawn 3-6 divers:
 
-- **web-diver**: DuckDuckGo MCP ONLY — `search` for queries, `expand_link` for `ref://` tokens, `fetch_content` for full pages. NEVER a built-in web search. Returns `{claim, url, verbatim quote}` per finding; primary sources only (official docs, specs, source code, first-party data).
+- **web-diver**: DuckDuckGo MCP is primary (`search` for queries, `expand_link` for `ref://` tokens, `fetch_content` for full pages). If DuckDuckGo fails (blocked, rate-limited, or unavailable), ask the harness if it has an internet search tool (e.g. built-in `web_search` or native search) and use that as the fallback to gather primary sources. Returns `{claim, url, verbatim quote}` per finding; primary sources only (official docs, specs, source code, first-party data).
 - **literature-diver** (only if the gate passed): arXiv MCP for depth (section reads, LaTeX, BibTeX) plus OpenAlex MCP for breadth (240M+ works, citation graphs, seminal/review discovery). Loop per paper: triage → bounded reads (methods/results/limitations first) → 1-2 hop traversal → record citation. Papers stay on disk; search is optional once seeds exist.
 - **books-diver** (whenever books could carry weight — history, philosophy, economics, classic science): Gutenberg MCP ONLY, loop `gutenberg_search_books → gutenberg_get_book → gutenberg_get_text` in bounded reads. Returns `{claim, book title/author/ID, verbatim passage}`.
 

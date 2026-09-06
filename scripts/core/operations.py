@@ -206,6 +206,16 @@ def check_git_update(
             message=f"deep-research: up to date ({local[:7]})",
         )
 
+    # If remote_sha is already an ancestor of HEAD, local has unpushed commits ahead of upstream
+    is_ancestor = git.run_git(["merge-base", "--is-ancestor", remote_sha, "HEAD"], path)
+    if is_ancestor is not None:
+        return UpdateResult(
+            status=UpdateStatus.UP_TO_DATE,
+            local_sha=local,
+            remote_sha=remote_sha,
+            message=f"deep-research: up to date ({local[:7]})",
+        )
+
     return UpdateResult(
         status=UpdateStatus.UPDATE_AVAILABLE,
         local_sha=local,

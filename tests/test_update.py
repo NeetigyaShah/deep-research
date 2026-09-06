@@ -69,6 +69,16 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "update available" in out.stdout and "git pull" in out.stdout, out.stdout
     print("ok   behind checkout reports update with pull guidance")
 
+    # 3. Ahead checkout (worker pulls, commits v3, but has not pushed)
+    git("pull", "origin", "main", cwd=worker)
+    (worker / "file.txt").write_text("v3-local", encoding="utf-8")
+    git("add", "file.txt", cwd=worker)
+    git("commit", "-m", "v3", cwd=worker)
+    out = check(worker)
+    assert out.returncode == 0, out.stdout + out.stderr
+    assert "up to date" in out.stdout, out.stdout
+    print("ok   ahead checkout reports up to date without false nag")
+
 with tempfile.TemporaryDirectory() as tmp:
     out = check(Path(tmp))
     assert out.returncode == 2, out.stdout + out.stderr

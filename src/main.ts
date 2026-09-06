@@ -63,16 +63,26 @@ import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 
 export default function deepResearch(pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
+		const missing: string[] = [];
 		try {
-			const proc = Bun.spawnSync(["uvx", "--version"]);
-			if (proc.exitCode !== 0) {
-				ctx.ui.notify(
-					"deep-research: `uvx` not found — install uv (https://docs.astral.sh/uv/getting-started/installation/) so the arxiv + ddg-search MCP servers can run.",
-					"warning",
-				);
-			}
+			const uvxProc = Bun.spawnSync(["uvx", "--version"]);
+			if (uvxProc.exitCode !== 0) missing.push("uvx (required for arxiv and ddg-search MCP servers)");
 		} catch {
-			ctx.ui.notify("deep-research: could not check for `uvx` — arxiv + ddg-search servers need it on PATH.", "warning");
+			missing.push("uvx (required for arxiv and ddg-search MCP servers)");
+		}
+
+		try {
+			const npxProc = Bun.spawnSync(["npx", "--version"]);
+			if (npxProc.exitCode !== 0) missing.push("npx (required for gutenberg and openalex MCP servers)");
+		} catch {
+			missing.push("npx (required for gutenberg and openalex MCP servers)");
+		}
+
+		if (missing.length > 0) {
+			ctx.ui.notify(
+				`deep-research: Missing prerequisites: ${missing.join(", ")}. First install this, only then will deep-research work.`,
+				"warning",
+			);
 		}
 	});
 
@@ -86,6 +96,11 @@ export default function deepResearch(pi: ExtensionAPI) {
 			const remoteSha = remote.stdout.toString().split(/\s+/, 1)[0] ?? "";
 			const localSha = local.stdout.toString().trim();
 			if (remoteSha && localSha && remoteSha !== localSha) {
+				const isAncestor = Bun.spawnSync(["git", "-C", root, "merge-base", "--is-ancestor", remoteSha, "HEAD"]);
+				if (isAncestor.exitCode === 0) {
+					// Local HEAD already incorporates remoteSha (local is ahead of remote) — do not nag
+					return;
+				}
 				ctx.ui.notify(
 					`deep-research: update available (${localSha.slice(0, 7)} → ${remoteSha.slice(0, 7)}) — git pull in ${root}.`,
 					"warning",
