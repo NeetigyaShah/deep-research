@@ -1,2 +1,4 @@
 research/
 *.log
+__pycache__/
+*.py[cod]

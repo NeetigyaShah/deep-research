@@ -5,26 +5,26 @@ Defaults to minor (0.x.0 -> 0.x+1.0); patch does 0.0.x -> 0.0.x+1.
 Prints the new version. check_repo.py enforces the lockstep in CI.
 """
 
+from __future__ import annotations
+
 import argparse
-import json
 import sys
 from pathlib import Path
 
-MANIFESTS = [
-    Path("package.json"),
-    Path(".claude-plugin/plugin.json"),
-    Path(".codex-plugin/plugin.json"),
-]
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.core import SemVer, bump_manifest_versions
+from scripts.core.protocols import FileManifestStore
+
+MANIFESTS = list(FileManifestStore.DEFAULT_MANIFESTS)
 
 
 def bump(version: str, part: str) -> str:
-    major, minor, patch = (int(p) for p in version.split("."))
-    if part == "patch":
-        patch += 1
-    else:
-        minor += 1
-        patch = 0
-    return f"{major}.{minor}.{patch}"
+    """Retained for backwards compatibility with tests and callers."""
+    ver = SemVer.parse(version)
+    return str(ver.bump_patch() if part == "patch" else ver.bump_minor())
 
 
 def main() -> int:
@@ -33,22 +33,14 @@ def main() -> int:
     parser.add_argument("--root", default=".")
     opts = parser.parse_args()
 
-    root = Path(opts.root)
-    versions = set()
-    for manifest in MANIFESTS:
-        data = json.loads((root / manifest).read_text(encoding="utf-8"))
-        versions.add(data.get("version"))
-    if len(versions) != 1 or None in versions:
-        print(f"refusing: manifest versions disagree ({versions})", file=sys.stderr)
+    store = FileManifestStore()
+    try:
+        _, new_ver = bump_manifest_versions(store=store, root=Path(opts.root), part=opts.part)
+    except ValueError as err:
+        print(str(err), file=sys.stderr)
         return 1
 
-    new_version = bump(versions.pop(), opts.part)
-    for manifest in MANIFESTS:
-        path = root / manifest
-        data = json.loads(path.read_text(encoding="utf-8"))
-        data["version"] = new_version
-        path.write_text(json.dumps(data), encoding="utf-8")
-    print(new_version)
+    print(str(new_ver))
     return 0
 
 
