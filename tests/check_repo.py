@@ -1,0 +1,92 @@
+"""Repo checks: manifests parse, versions agree, skill/agent/command frontmatter valid."""
+
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+FAILURES: list = []
+
+
+def check(condition, message):
+    print(("ok  " if condition else "FAIL") + " " + message)
+    if not condition:
+        FAILURES.append(message)
+
+
+def load_json(path):
+    try:
+        return json.loads((ROOT / path).read_text(encoding="utf-8"))
+    except Exception as exc:
+        check(False, f"{path} parses as JSON ({exc})")
+        return None
+
+
+def frontmatter(path):
+    text = (ROOT / path).read_text(encoding="utf-8")
+    match = re.match(r"---\n(.*?)\n---", text, re.S)
+    if not match:
+        return None
+    fields = {}
+    for line in match.group(1).splitlines():
+        if ":" in line:
+            key, value = line.split(":", 1)
+            fields[key.strip()] = value.strip()
+    return fields
+
+
+manifests = [
+    "package.json",
+    ".mcp.json",
+    "mcp.json",
+    ".codex-mcp.json",
+    ".claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    ".codex-plugin/plugin.json",
+    ".agents/plugins/marketplace.json",
+    "integrations/opencode.json",
+    "integrations/cursor-mcp.json",
+]
+parsed = {}
+for name in manifests:
+    data = load_json(name)
+    if data is not None:
+        check(True, f"{name} parses as JSON")
+        parsed[name] = data
+
+for name in ("package.json", ".claude-plugin/plugin.json", ".codex-plugin/plugin.json"):
+    data = parsed.get(name, {})
+    check(bool(data.get("name")), f"{name} has a name")
+    check(bool(data.get("description")), f"{name} has a description")
+
+versions = {
+    parsed.get("package.json", {}).get("version"),
+    parsed.get(".claude-plugin/plugin.json", {}).get("version"),
+    parsed.get(".codex-plugin/plugin.json", {}).get("version"),
+}
+check(len(versions) == 1 and None not in versions, f"versions agree across manifests ({versions})")
+
+for server in ("arxiv", "ddg-search"):
+    for name in (".mcp.json", "mcp.json"):
+        entry = parsed.get(name, {}).get("mcpServers", {}).get(server, {})
+        check(bool(entry.get("command")) and bool(entry.get("args")), f"{name} defines {server} server")
+    flat = parsed.get(".codex-mcp.json", {}).get(server, {})
+    check(bool(flat.get("command")) and bool(flat.get("args")), f".codex-mcp.json defines {server} server")
+    oco = parsed.get("integrations/opencode.json", {}).get("mcp", {}).get("servers", {}).get(server, {})
+    check(oco.get("type") == "local" and bool(oco.get("command")), f"integrations/opencode.json defines {server} server")
+    cur = parsed.get("integrations/cursor-mcp.json", {}).get("mcpServers", {}).get(server, {})
+    check(bool(cur.get("command")) and bool(cur.get("args")), f"integrations/cursor-mcp.json defines {server} server")
+
+skill = frontmatter("skills/deep-research/SKILL.md")
+check(bool(skill and skill.get("name") and skill.get("description")), "skill has name + description frontmatter")
+
+for agent in ("research-planner", "web-diver", "arxiv-diver", "citation-checker"):
+    fm = frontmatter(f"agents/{agent}.md")
+    check(bool(fm and fm.get("name") and fm.get("description")), f"agent {agent} has name + description frontmatter")
+
+cmd = frontmatter("commands/deep-research.md")
+check(bool(cmd and cmd.get("description")), "command has description frontmatter")
+
+print(f"\n{len(FAILURES)} failures")
+sys.exit(1 if FAILURES else 0)
