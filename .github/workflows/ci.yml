@@ -40,5 +40,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - uses: astral-sh/setup-uv@v5
       - run: python scripts/check_mcp.py
       - run: python tests/mcp_handshake.py
