@@ -98,6 +98,7 @@ check("Phase 7" in skill_text, "skill defines the Phase 7 follow-up loop")
 check("plan-attack" in skill_text, "skill defines the observer plan review")
 checker_text = (ROOT / "agents/citation-checker.md").read_text(encoding="utf-8")
 check("Plan-attack mode" in checker_text and "plan-review.md" in checker_text, "checker defines plan-attack mode")
+check("ledger ID" in skill_text and "backstop" in skill_text, "skill defines provenance-first synthesis with gate backstop")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)

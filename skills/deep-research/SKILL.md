@@ -101,7 +101,7 @@ Produce query packs from the Brief (no searching yourself):
 
 ## Phase 3 — Execute (one parallel batch)
 
-Shared context = Research Brief + evidence-ledger schema. Spawn 3-6 divers:
+Shared context = Research Brief + evidence-ledger schema. The coordinator assigns each diver a 2-letter prefix (WA, WB, AA, BK…); every ledger entry is tagged with a ledger ID unique per run (`WA1`, `AA3`…), recorded in its evidence file. Spawn 3-6 divers:
 
 - **web-diver**: DuckDuckGo MCP ONLY — `search` for queries, `expand_link` for `ref://` tokens, `fetch_content` for full pages. NEVER a built-in web search. Returns `{claim, url, verbatim quote}` per finding; primary sources only (official docs, specs, source code, first-party data).
 - **arxiv-diver** (only if the gate passed): arXiv MCP ONLY, loop `search_papers → get_abstract → download_paper → get_paper_outline → read_paper_section` (one bounded section at a time) → `citation_graph` (1-2 hops) → `export_citations` (BibTeX). Papers stay on disk; search is optional once seeds exist.
@@ -122,7 +122,7 @@ The loop CANNOT stop while any must-answer has zero kept claims — unless two c
 ## Phase 6 — Report + end log
 
 1. Set `finished_at` (UTC ISO `YYYY-MM-DDTHH:MM:SS+00:00`), `papers_cited` (distinct arXiv IDs used in the report), and `status: complete` in `state.md`.
-2. Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix.
+2. Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix. Provenance-first: only facts carrying ledger IDs may appear — every claim is written WITH its IDs, and any sentence without one is deleted at write time, not fixed after. The Phase 4 gate stays as backstop and verifies every cited ID traces to a kept entry.
 3. Write `research/<slug>/stats.json`:
 
 ```json
