@@ -1,0 +1,1 @@
+{"mcp": {"servers": {"arxiv": {"command": ["uvx", "arxiv-mcp-server"], "type": "local"}, "ddg-search": {"command": ["uvx", "--with", "duckduckgo-mcp-server[browser]", "duckduckgo-mcp-server"], "type": "local"}}}}

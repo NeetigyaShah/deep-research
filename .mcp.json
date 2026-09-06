@@ -1,0 +1,1 @@
+{"$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json", "mcpServers": {"arxiv": {"args": ["arxiv-mcp-server"], "command": "uvx", "type": "stdio"}, "ddg-search": {"args": ["--with", "duckduckgo-mcp-server[browser]", "duckduckgo-mcp-server"], "command": "uvx", "type": "stdio"}}}

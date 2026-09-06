@@ -1,0 +1,1 @@
+{"interface": {"displayName": "Deep Research"}, "name": "deep-research", "plugins": [{"category": "Research", "name": "deep-research", "source": {"path": "./", "source": "local"}}]}
