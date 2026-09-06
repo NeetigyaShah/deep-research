@@ -126,7 +126,7 @@ The loop CANNOT stop while any must-answer has zero kept claims — unless two c
 ## Phase 6 — Report + end log
 
 1. Set `finished_at` (UTC ISO `YYYY-MM-DDTHH:MM:SS+00:00`), `papers_cited` (distinct arXiv IDs used in the report), and `status: complete` in `state.md`.
-2. Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix. Provenance-first: only facts carrying ledger IDs may appear — every claim is written WITH its IDs, and any sentence without one is deleted at write time, not fixed after. The Phase 4 gate stays as backstop and verifies every cited ID traces to a kept entry.
+2. Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix. Provenance-first: only facts carrying ledger IDs may appear — every claim is written WITH its IDs, and any sentence without one is deleted at write time, not fixed after. The Phase 4 gate stays as backstop and verifies every cited ID traces to a kept entry. Confidence: tag every finding `[thin]` (1 kept claim), `[solid]` (2), or `[strong]` (3+) from kept-claim depth — never round thin up, and let Gaps say what would close each thin item.
 3. Write `research/<slug>/stats.json`:
 
 ```json
