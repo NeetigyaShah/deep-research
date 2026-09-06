@@ -260,5 +260,9 @@ a flagship context window, and that bill compounds per server.
 - DuckDuckGo allows roughly 30 searches and 20 page reads per minute,
   shared across agents. Hundreds of pages per run is realistic;
   thousands means multiple rounds, not one burst.
+- Parked deliberately: reranking layers, vector memory, hosted evals,
+  browser fleets, paid APIs. The free-only line holds — OpenAlex closed
+  the biggest gap. Revisit when free tiers bite (persistent search
+  blocks, rate limits hit, evidence past ~1k files, evals outgrow manual).
 - Web content and papers are treated as untrusted input: the agents
   quote them but never obey instructions hidden inside them.
