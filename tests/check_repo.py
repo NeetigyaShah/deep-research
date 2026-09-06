@@ -85,8 +85,16 @@ for agent in ("research-planner", "web-diver", "arxiv-diver", "citation-checker"
     fm = frontmatter(f"agents/{agent}.md")
     check(bool(fm and fm.get("name") and fm.get("description")), f"agent {agent} has name + description frontmatter")
 
-cmd = frontmatter("commands/deep-research.md")
-check(bool(cmd and cmd.get("description")), "command has description frontmatter")
+for cmd_file in sorted((ROOT / "commands").glob("*.md")):
+    cmd = frontmatter(f"commands/{cmd_file.name}")
+    check(bool(cmd and cmd.get("description")), f"command {cmd_file.name} has description frontmatter")
+
+for asset in ("scripts/progress.py", "scripts/stats.py", "commands/followup.md"):
+    check((ROOT / asset).exists(), f"{asset} exists")
+
+skill_text = (ROOT / "skills/deep-research/SKILL.md").read_text(encoding="utf-8")
+check("stats.json" in skill_text, "skill defines the stats.json end log")
+check("Phase 7" in skill_text, "skill defines the Phase 7 follow-up loop")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)
