@@ -93,7 +93,7 @@ for asset in (
     "scripts/progress.py",
     "scripts/stats.py",
     "scripts/check_update.py",
-    "scripts/bump_version.py",
+    "scripts/check_mcp.py",
     "scripts/core/__init__.py",
     "scripts/core/models.py",
     "scripts/core/protocols.py",
@@ -104,6 +104,8 @@ for asset in (
     check((ROOT / asset).exists(), f"{asset} exists")
 
 skill_text = (ROOT / "skills/deep-research/SKILL.md").read_text(encoding="utf-8")
+check("MCP Gate Check" in skill_text, "skill defines Phase 0 MCP gate check")
+check("built-in `web_search`" in skill_text or "internet search tool" in skill_text, "skill defines internet search fallback")
 check("stats.json" in skill_text, "skill defines the stats.json end log")
 check("Phase 7" in skill_text, "skill defines the Phase 7 follow-up loop")
 check("plan-attack" in skill_text, "skill defines the observer plan review")

@@ -245,6 +245,15 @@ def test_git_client_stub_update_check() -> None:
     res_behind = check_git_update(stub_behind, Path("/fake/repo"))
     assert res_behind.status == UpdateStatus.UPDATE_AVAILABLE
     assert "update available (1111111 → 2222222)" in res_behind.message
+    # 2b. Ahead of remote (remote is ancestor of HEAD)
+    stub_ahead = GitClientStub({
+        ("rev-parse", "HEAD"): "3333333234567890",
+        ("ls-remote", "origin", "refs/heads/main"): "2222222234567890\trefs/heads/main",
+        ("merge-base", "--is-ancestor", "2222222234567890", "HEAD"): "",
+    })
+    res_ahead = check_git_update(stub_ahead, Path("/fake/repo"))
+    assert res_ahead.status == UpdateStatus.UP_TO_DATE
+    assert "up to date" in res_ahead.message
 
     # 3. Not a repo
     stub_not_repo = GitClientStub({

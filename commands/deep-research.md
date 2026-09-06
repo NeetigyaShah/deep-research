@@ -3,6 +3,6 @@ description: Start a deep-research run on the given topic. Grills to a shared br
 argument-hint: <research topic>
 ---
 
-Run the `deep-research` skill on the topic below. Phase 1 first: mirror the request and ask frontier questions — no searching, no factual claims — until the brief is agreed. Then plan, fan out, citation-gate, and report per the skill contract.
+Run the `deep-research` skill on the topic below. Phase 0 first: verify all 4 MCP servers (arxiv, ddg-search, gutenberg, openalex) are available; if even 1 is missing, stop immediately and tell the user: "First install this, only then will deep-research work." Then grill to a shared brief (Phase 1), plan, fan out with harness internet search fallback if DuckDuckGo fails, citation-gate, and report per the skill contract.
 
 Topic: everything the user typed after `/deep-research`.
