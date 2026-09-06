@@ -96,18 +96,6 @@ export default function deepResearch(pi: ExtensionAPI) {
 		}
 	});
 
-	pi.registerCommand("deep-research", {
-		description: "Start a deep-research run: grill to a brief, then parallel DuckDuckGo + arXiv research with citations.",
-		handler: async (args, ctx) => {
-			const topic = args.trim();
-			if (!topic) {
-				ctx.ui.notify("Usage: /deep-research <research topic>", "warning");
-				return;
-			}
-			pi.sendUserMessage(`Follow the deep-research skill (skill://deep-research) for this request. Topic: ${topic}`);
-		},
-	});
-
 	pi.registerCommand("deep-research-status", {
 		description: "Show the live progress bar of the latest deep-research run.",
 		handler: async (_args, ctx) => {
@@ -142,19 +130,4 @@ export default function deepResearch(pi: ExtensionAPI) {
 		},
 	});
 
-	pi.registerCommand("followup", {
-		description: "Ask about a finished deep-research run; say 'research more' to dig deeper with the same tools.",
-		handler: async (args, ctx) => {
-			const { dir, question } = await resolveFollowupRun(ctx.cwd, args);
-			if (!dir) {
-				ctx.ui.notify("deep-research: no research/*/state.md found — run /deep-research first.", "warning");
-				return;
-			}
-			if (!question) {
-				ctx.ui.notify("Usage: /followup [run] <question>", "warning");
-				return;
-			}
-			pi.sendUserMessage(`Follow the deep-research skill Phase 7 (follow-up) for run ${dir}. Research directory: ${dir}. Question: ${question}`);
-		},
-	});
 }

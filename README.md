@@ -218,7 +218,7 @@ commands/followup.md         the /followup command
 .claude-plugin/             Claude Code plugin + marketplace files
 .codex-plugin/              Codex plugin file
 .agents/                    agent-plugins marketplace file
-src/main.ts                 OMP extension (commands + update + startup checks)
+src/main.ts                 OMP extension (status command + update + startup checks)
 scripts/progress.py         live progress bar from any state.md
 scripts/stats.py            end-of-run log from stats.json
 scripts/check_update.py     update check against GitHub main
