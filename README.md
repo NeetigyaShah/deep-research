@@ -139,6 +139,23 @@ You can also invoke the skill directly where your tool supports it
 
 When it asks for output format: `md` (default) always works. `pdf` and
 `doc` need extra conversion software installed — it will tell you.
+While it works, every round ends with a progress line like
+`[Research 62% | round 4 | 41/54 claims | 4/6 questions | frontier 12 |
+183 pages] ████████████░░░░░░░░`. Percent = mostly facts-found versus
+target, partly leads worked through — capped at 99% until the report is
+done. Check anytime without disturbing it: `python scripts/progress.py
+research/<topic>` in any terminal, or `/deep-research-status` in OMP.
+
+## The loop (why it doesn't quit early)
+
+Each run keeps score in `research/<topic>/state.md`: how many questions
+are covered, how many checked facts exist versus the target (3 per
+question), and how many leads are still queued. A round that leaves any
+question with zero facts behind is not allowed to be the last one —
+unless two full rounds in a row find nothing new anywhere, which means
+the topic is dry and the rest goes under Gaps. If the search keeps
+repeating itself, the agents are forced to rephrase before trying again.
+You can stop it anytime; it reports from what it has.
 
 ## What's inside
 
@@ -153,7 +170,8 @@ commands/deep-research.md   the /deep-research command
 .claude-plugin/             Claude Code plugin + marketplace files
 .codex-plugin/              Codex plugin file
 .agents/                    agent-plugins marketplace file
-src/main.ts                 OMP extension (command + startup check)
+src/main.ts                 OMP extension (commands + startup check)
+scripts/progress.py         live progress bar from any state.md
 ```
 
 ## Honest notes
