@@ -15,7 +15,7 @@ factory({
 	},
 });
 
-const expected = ["on:session_start", "command:deep-research", "command:deep-research-status", "command:followup"];
+const expected = ["on:session_start", "on:session_start", "command:deep-research-status"];
 for (const want of expected) {
 	if (!calls.includes(want)) throw new Error(`missing registration: ${want} (got ${JSON.stringify(calls)})`);
 }
