@@ -61,10 +61,10 @@ Pick your tool. In every case, make sure `uvx` works first by running
 ### OMP (Oh My Pi)
 
 ```bash
-# from your project folder, point OMP at this plugin:
-# add to .omp/config.yml:
+git clone https://github.com/NeetigyaShah/deep-research.git
+# add to your project's .omp/config.yml:
 #   extensions:
-#     - <path-to-this-folder>
+#     - ../deep-research
 ```
 
 Then inside OMP, run `/reload-plugins` and check `/mcp list` shows
@@ -76,7 +76,7 @@ also installs it for all projects.)
 ### Claude Code
 
 ```bash
-claude plugin marketplace add <your-github-user>/deep-research
+claude plugin marketplace add NeetigyaShah/deep-research
 claude plugin install deep-research@deep-research
 ```
 
@@ -86,7 +86,7 @@ and `ddg-search` servers connected.
 ### Codex
 
 ```bash
-codex plugin marketplace add <your-github-user>/deep-research
+codex plugin marketplace add NeetigyaShah/deep-research
 codex plugin add deep-research@deep-research
 ```
 
