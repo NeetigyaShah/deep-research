@@ -44,15 +44,17 @@ an interrupted run picks up where it left off.
 ## What you need
 
 Two things: **uv** (provides `uvx` for the arxiv and ddg-search servers)
-and **Node.js** (provides `npx` for the gutenberg books server).
+and **Node.js** (provides `npx` for the gutenberg books and openalex
+literature servers).
 Install uv from
 https://docs.astral.sh/uv/getting-started/installation/
 
-The three servers it fetches:
+The four servers it fetches:
 
 - **arxiv** — searches and reads academic papers from arXiv.
 - **ddg-search** — searches the web through DuckDuckGo and reads pages.
 - **gutenberg** — searches 78,000+ free public-domain books and quotes passages verbatim.
+- **openalex** — searches 240M+ scholarly works with citation graphs; free, no account.
 
 ## Installation
 
@@ -69,7 +71,7 @@ git clone https://github.com/NeetigyaShah/deep-research.git
 ```
 
 Then inside OMP, run `/reload-plugins` and check `/mcp list` shows
-`arxiv`, `ddg-search`, and `gutenberg`.
+`arxiv`, `ddg-search`, `gutenberg`, and `openalex`.
 
 (On machines where symlinks work, `omp plugin link <path-to-this-folder>`
 also installs it for all projects.)
@@ -92,14 +94,14 @@ codex plugin add deep-research@deep-research
 ```
 
 This repo already contains the Codex plugin file (`.codex-plugin/`)
-with all three servers and the skill wired in.
+with all four servers and the skill wired in.
 
 ### OpenCode
 
 OpenCode reads its setup from `opencode.json` and the `.opencode/`
 folder. Merge the servers and copy the workflow files:
 
-# 1. add the three servers from integrations/opencode.json
+# 1. add the four servers from integrations/opencode.json
 #    into your opencode.json under "mcp" -> "servers"
 # 2. copy the skill, command, and agents:
 cp -r skills/deep-research .opencode/skills/
@@ -207,12 +209,12 @@ quiet with guidance when offline. Exit codes: 0 current, 1 behind,
 ## What's inside
 
 ```text
-.mcp.json / mcp.json        all three servers (Claude/OMP style)
-.codex-mcp.json             all three servers (Codex style)
-integrations/opencode.json  all three servers (OpenCode style)
-integrations/cursor-mcp.json all three servers (Cursor style)
+.mcp.json / mcp.json        all four servers (Claude/OMP style)
+.codex-mcp.json             all four servers (Codex style)
+integrations/opencode.json  all four servers (OpenCode style)
+integrations/cursor-mcp.json all four servers (Cursor style)
 skills/deep-research/       the 6-step workflow (works everywhere)
-agents/                     planner, web/paper/books divers, fact checker
+agents/                     planner, web/lit/books divers, fact checker
 commands/deep-research.md   the /deep-research command
 commands/followup.md         the /followup command
 .claude-plugin/             Claude Code plugin + marketplace files
@@ -258,5 +260,9 @@ a flagship context window, and that bill compounds per server.
 - DuckDuckGo allows roughly 30 searches and 20 page reads per minute,
   shared across agents. Hundreds of pages per run is realistic;
   thousands means multiple rounds, not one burst.
+- Parked deliberately: reranking layers, vector memory, hosted evals,
+  browser fleets, paid APIs. The free-only line holds — OpenAlex closed
+  the biggest gap. Revisit when free tiers bite (persistent search
+  blocks, rate limits hit, evidence past ~1k files, evals outgrow manual).
 - Web content and papers are treated as untrusted input: the agents
   quote them but never obey instructions hidden inside them.
