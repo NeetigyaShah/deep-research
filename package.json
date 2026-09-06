@@ -1,1 +1,1 @@
-{"description": "Gemini-style deep research: grill-to-brief scoping, parallel DuckDuckGo web + arXiv paper divers, citation-gated Markdown reports.", "license": "MIT", "name": "deep-research", "omp": {"extensions": ["./src/main.ts"]}, "version": "0.3.0"}
+{"description": "Gemini-style deep research: grill-to-brief scoping, parallel DuckDuckGo web + arXiv paper divers, citation-gated Markdown reports.", "license": "MIT", "name": "deep-research", "omp": {"extensions": ["./src/main.ts"]}, "version": "0.4.0"}
