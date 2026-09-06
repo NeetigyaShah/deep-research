@@ -113,10 +113,14 @@ Shared context = Research Brief + evidence-ledger schema. The coordinator assign
 - **literature-diver** (only if the gate passed): arXiv MCP for depth (section reads, LaTeX, BibTeX) plus OpenAlex MCP for breadth (240M+ works, citation graphs, seminal/review discovery). Loop per paper: triage → bounded reads (methods/results/limitations first) → 1-2 hop traversal → record citation. Papers stay on disk; search is optional once seeds exist.
 - **books-diver** (whenever books could carry weight — history, philosophy, economics, classic science): Gutenberg MCP ONLY, loop `gutenberg_search_books → gutenberg_get_book → gutenberg_get_text` in bounded reads. Returns `{claim, book title/author/ID, verbatim passage}`.
 
-## Phase 4 — Citation gate
+## Phase 4 — Cross-Diver Peer Validation (Citation Gate)
 
-Route all ledgers through the citation-checker: keep a claim ONLY with `{primary URL + verbatim quote}`, `{arXiv ID + section + BibTeX}`, or `{Gutenberg book title/author/ID + verbatim passage}`. Drop or mark `[unverified]` everything else. The final report MUST NOT contain an uncited number, date, or causal claim.
+Route all draft ledgers through `citation-checker` acting as an active peer verifier. The checker independently fetches the cited primary sources (using DuckDuckGo MCP `fetch_content` / harness fallback, arXiv MCP `read_paper_section`, OpenAlex `get_work`, or Gutenberg `gutenberg_get_text`) to prevent blind verification:
 
+1. **Textual Grounding**: Independently fetches the source and confirms the cited `quote:` exists verbatim in the document. Drops any hallucinated or altered quote as `QUOTE_MISMATCH`.
+2. **Contextual Entailment**: Reads surrounding context to verify the quote entails the claim rather than cherry-picking a refuted point. Drops out-of-context claims as `CONTEXT_CONTRADICTION`.
+3. **Verification Priority**: 100% verification for all numerical values, dates, performance metrics, and causal claims; spot-check qualitative background. Batches fetches by source URL/ID to conserve rate limits.
+4. **Kept Threshold**: Only claims with a `VERIFIED` verdict ({primary URL + verified quote}, {arXiv/OpenAlex ID + verified section + BibTeX}, or {Gutenberg ID + verified passage}) are assigned run-unique ledger IDs (`WA1`, `LA2`) and enter kept claims. The final report MUST NOT contain an uncited or unverified number, date, or causal claim.
 ## Phase 5 — Gap loop (unbounded, stops on saturation)
 
 The loop CANNOT stop while any must-answer has zero kept claims — unless two consecutive full rounds add zero kept claims anywhere (dead topic): then stop and file everything under `## Gaps`. Otherwise each round: map evidence → must-answer list, spawn the next targeted diver batch from the frontier queue, dedup every fetch against `visited.md`, gate the ledgers (Phase 4), rewrite `outline.md`, update `state.md`, commit, print the progress line. Then:
