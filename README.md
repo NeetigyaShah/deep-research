@@ -146,6 +146,39 @@ target, partly leads worked through — capped at 99% until the report is
 done. Check anytime without disturbing it: `python scripts/progress.py
 research/<topic>` in any terminal, or `/deep-research-status` in OMP.
 
+## When it finishes (the end log)
+
+Every run ends with a log like this — same numbers in every tool,
+only the place you see it changes:
+
+```text
+[Research done] carbon-credits — 6/6 questions, 58 kept claims
+  Time: 1h 2m 3s (… → … UTC) | Rounds: 6 | Pages: 240
+  Papers cited: 7 | Web sources: 31 | Dropped: 12
+  Report: research/carbon-credits/report.md
+```
+
+That's papers cited, web sources, checked facts kept and dropped, and
+total time from start to finish. In OMP it prints in chat and
+`/deep-research-status` shows it on demand. Everywhere else it prints
+in chat and `python scripts/stats.py research/<topic>` reprints it in
+any terminal.
+
+## Asking follow-up questions
+
+```text
+/followup what penalty applies to cement plants that miss targets?
+/followup carbon-credits how is biomass treated?
+```
+
+It answers from the facts it already checked, reusing the report's
+citations — no new searching, no new interview. If the answer isn't in
+there, it says exactly what is missing and what it would search next.
+Reply `research more` and it digs deeper with the same tools, checks
+the new facts, updates the report, and prints a fresh end log. The
+original brief is never rewritten; every follow-up is appended to
+`followups.md` so you can see what was asked and what changed.
+
 ## The loop (why it doesn't quit early)
 
 Each run keeps score in `research/<topic>/state.md`: how many questions

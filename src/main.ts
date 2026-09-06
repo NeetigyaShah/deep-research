@@ -84,10 +84,53 @@ export default function deepResearch(pi: ExtensionAPI) {
 					const sep = line.indexOf(":");
 					if (sep > 0) vals[line.slice(0, sep).trim()] = line.slice(sep + 1).trim();
 				}
-				ctx.ui.notify(`${dir}: ${progressLine(vals)}`, "info");
+				let message = `${dir}: ${progressLine(vals)}`;
+				if (vals["status"] === "complete") {
+					try {
+						const stats = JSON.parse(await readFile(path.join(ctx.cwd, dir, "stats.json"), "utf8")) as Record<string, unknown>;
+						const elapsed = typeof stats["elapsed"] === "string" ? stats["elapsed"] : "?";
+						const papers = typeof stats["papers_count"] === "number" ? stats["papers_count"] : "?";
+						const web = typeof stats["web_sources_count"] === "number" ? stats["web_sources_count"] : "?";
+						message += ` | done in ${elapsed} | ${papers} papers, ${web} web sources`;
+					} catch {
+						// stats.json missing — progress line already says enough.
+					}
+				}
+				ctx.ui.notify(message, "info");
 			} catch {
 				ctx.ui.notify(`deep-research: could not read ${dir}/state.md.`, "warning");
 			}
+		},
+	});
+
+	pi.registerCommand("followup", {
+		description: "Ask about a finished deep-research run; say 'research more' to dig deeper with the same tools.",
+		handler: async (args, ctx) => {
+			const text = args.trim();
+			let dir = await latestStateDir(ctx.cwd);
+			let question = text;
+			const first = text.split(/\s+/, 1)[0] ?? "";
+			if (first) {
+				try {
+					const candidate = path.join(ctx.cwd, "research", first, "state.md");
+					const info = await stat(candidate);
+					if (info.isFile()) {
+						dir = path.join("research", first);
+						question = text.slice(first.length).trim();
+					}
+				} catch {
+					// First word is not a run name — whole text is the question.
+				}
+			}
+			if (!dir) {
+				ctx.ui.notify("deep-research: no research/*/state.md found — run /deep-research first.", "warning");
+				return;
+			}
+			if (!question) {
+				ctx.ui.notify("Usage: /followup [run] <question>", "warning");
+				return;
+			}
+			pi.sendUserMessage(`Follow the deep-research skill Phase 7 (follow-up) for run ${dir}. Research directory: ${dir}. Question: ${question}`);
 		},
 	});
 }

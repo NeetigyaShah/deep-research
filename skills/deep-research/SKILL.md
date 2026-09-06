@@ -40,10 +40,14 @@ round: 4
 must_answer_total: 6
 must_answer_covered: 4
 kept_claims: 41
+dropped_claims: 9
 target_claims: 54
 frontier_done: 31
 frontier_pending: 12
 visited_pages: 183
+papers_cited: 5
+started_at: 2026-09-06T10:00:00+00:00
+finished_at: ""
 status: running
 ```
 
@@ -113,6 +117,39 @@ The loop CANNOT stop while any must-answer has zero kept claims — unless two c
 - **Stall rule**: frontier repeats the same queries twice → force rephrasing (new angles, `site:` variants, adjacent jargon) before respawning. Never spin idle rounds to look busy.
 - **Interrupt wins**: user says stop → finish the round, report from kept claims, gaps for the rest. Still uncovered at any stop → `## Gaps`, never invent.
 
-## Phase 6 — Report
+## Phase 6 — Report + end log
 
-Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix. Set `status: complete` in `state.md` first if Phase 5 didn't. State the file path when done.
+1. Set `finished_at` (UTC ISO `YYYY-MM-DDTHH:MM:SS+00:00`), `papers_cited` (distinct arXiv IDs used in the report), and `status: complete` in `state.md`.
+2. Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix.
+3. Write `research/<slug>/stats.json`:
+
+```json
+{"slug": "<slug>", "started_at": "<...+00:00>", "finished_at": "<...+00:00>", "elapsed": "1h 2m 3s", "rounds": 6, "kept_claims": 58, "dropped_claims": 12, "papers_cited": ["<arXiv-id>", "..."], "papers_count": 7, "web_sources_count": 31, "visited_pages": 240, "must_answer_covered": 6, "must_answer_total": 6, "report": "research/<slug>/report.md"}
+```
+
+4. Emit the end log. Same content in every harness — only the channel differs:
+
+| Harness | How the log surfaces |
+|---|---|
+| OMP | print the STATS block in chat; `/deep-research-status` shows it on demand |
+| OpenCode / Claude Code / Codex CLI | print the STATS block in chat; `python scripts/stats.py research/<slug>` reprints it in any terminal |
+
+STATS block (exact shape):
+
+```text
+[Research done] <slug> — <covered>/<total> questions, <kept> kept claims
+  Time: <elapsed> (<started> → <finished> UTC) | Rounds: <n> | Pages: <n>
+  Papers cited: <n> | Web sources: <n> | Dropped: <n>
+  Report: research/<slug>/report.md
+```
+
+State the report + stats paths when done.
+
+## Phase 7 — Follow-up (`/followup`)
+
+Triggered by `/followup [slug] <question>` (no slug = latest run, newest `state.md`). Never re-grill, never rewrite `brief.md`.
+
+1. Load read-only: `brief.md`, `report.md`, `state.md`, `outline.md`. If the run directory is missing anything, say so and stop.
+2. Answer strictly from kept evidence, reusing the report's existing `[n]` cites. No new searching in this step.
+3. End with exactly one verdict line: `ANSWERED FROM EVIDENCE` or `NEEDS MORE RESEARCH: <what is missing> + <proposed queries>`.
+4. Only on explicit user confirmation (`research more`, `dig deeper`, or equivalent) → spawn ONE targeted diver batch with the same Phase 3 tools, gate new claims through Phase 4, append `evidence/NN-<diver>.md` (continue numbering), update `state.md` / `outline.md` / `report.md` / `stats.json`, append the Q/A + outcome to `followups.md`, print the progress line and a fresh STATS block.
