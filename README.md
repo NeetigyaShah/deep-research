@@ -229,16 +229,12 @@ scripts/bump_version.py     version bumps across manifests
 
 ## Versioning (contributors)
 
-Every merge to `main` moves the version automatically: feature merges
-bump minor (`0.3.0` → `0.4.0`), merges labeled `bug` bump patch
-(`0.3.0` → `0.3.1`). A bot opens the bump PR and it merges itself once
-CI is green — never bump versions by hand in a feature PR. If your PR
-fixes a bug, add the `bug` label so it bumps patch instead of minor.
-One-time setup for zero-click operation: bot PRs opened with the default
-token need one manual approval per run. Create a fine-grained personal
-token (repository access to this repo, Contents read/write, Pull requests
-read/write), save it as the `ACTIONS_BOT_TOKEN` repo secret, and the bot
-uses it instead — CI then runs unapproved and merges finish themselves.
+Bump versions by hand in the feature PR: features move minor (`0.5.0` →
+`0.6.0`), bug fixes move patch (`0.5.0` → `0.5.1`). All three manifests
+(`package.json`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`)
+move together — `python scripts/bump_version.py --part minor|patch` does
+it, and CI fails the PR if they disagree. Tag the release (`v0.6.0`)
+after merge.
 
 ## New MCP servers (contributors)
 
