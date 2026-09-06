@@ -44,6 +44,7 @@ jobs:
         # need one approval per run via the Actions tab or API.
         env:
           GH_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN != '' && secrets.ACTIONS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          PART: ${{ steps.part.outputs.part }}
         run: |
           NEW_VERSION=$(python scripts/bump_version.py --part "$PART")
           BRANCH="version-bump/$NEW_VERSION"
