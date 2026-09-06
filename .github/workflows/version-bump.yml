@@ -48,6 +48,10 @@ jobs:
         run: |
           NEW_VERSION=$(python scripts/bump_version.py --part "$PART")
           BRANCH="version-bump/$NEW_VERSION"
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" != "0" ]; then
+            echo "version-bump PR already open for $NEW_VERSION, skipping"
+            exit 0
+          fi
           git config user.name "deep-research-bot"
           git config user.email "deep-research-bot@users.noreply.github.com"
           git checkout -b "$BRANCH"
