@@ -89,7 +89,7 @@ for cmd_file in sorted((ROOT / "commands").glob("*.md")):
     cmd = frontmatter(f"commands/{cmd_file.name}")
     check(bool(cmd and cmd.get("description")), f"command {cmd_file.name} has description frontmatter")
 
-for asset in ("scripts/progress.py", "scripts/stats.py", "commands/followup.md"):
+for asset in ("scripts/progress.py", "scripts/stats.py", "scripts/check_update.py", "commands/followup.md"):
     check((ROOT / asset).exists(), f"{asset} exists")
 
 skill_text = (ROOT / "skills/deep-research/SKILL.md").read_text(encoding="utf-8")

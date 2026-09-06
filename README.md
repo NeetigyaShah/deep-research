@@ -190,6 +190,20 @@ the topic is dry and the rest goes under Gaps. If the search keeps
 repeating itself, the agents are forced to rephrase before trying again.
 You can stop it anytime; it reports from what it has.
 
+## Staying updated
+
+In OMP you get a warning at session start when the plugin's GitHub `main`
+has commits yours doesn't — just `git pull` in the plugin folder.
+Everywhere else (or to check by hand), run:
+
+```bash
+python scripts/check_update.py <path-to-deep-research>
+```
+
+It prints `up to date`, `update available … — git pull …`, or stays
+quiet with guidance when offline. Exit codes: 0 current, 1 behind,
+2 cannot check.
+
 ## What's inside
 
 ```text
@@ -200,11 +214,14 @@ integrations/cursor-mcp.json both search servers (Cursor style)
 skills/deep-research/       the 6-step workflow (works everywhere)
 agents/                     planner, web diver, paper diver, fact checker
 commands/deep-research.md   the /deep-research command
+commands/followup.md         the /followup command
 .claude-plugin/             Claude Code plugin + marketplace files
 .codex-plugin/              Codex plugin file
 .agents/                    agent-plugins marketplace file
-src/main.ts                 OMP extension (commands + startup check)
+src/main.ts                 OMP extension (commands + update + startup checks)
 scripts/progress.py         live progress bar from any state.md
+scripts/stats.py            end-of-run log from stats.json
+scripts/check_update.py     update check against GitHub main
 ```
 
 ## Honest notes

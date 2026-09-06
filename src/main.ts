@@ -40,6 +40,25 @@ async function latestStateDir(cwd: string): Promise<string | null> {
 	}
 	return best?.dir ?? null;
 }
+
+export async function resolveFollowupRun(cwd: string, args: string): Promise<{ dir: string | null; question: string }> {
+	const text = args.trim();
+	let dir = await latestStateDir(cwd);
+	let question = text;
+	const first = text.split(/\s+/, 1)[0] ?? "";
+	if (first) {
+		try {
+			const info = await stat(path.join(cwd, "research", first, "state.md"));
+			if (info.isFile()) {
+				dir = path.join("research", first);
+				question = text.slice(first.length).trim();
+			}
+		} catch {
+			// First word is not a run name — whole text is the question.
+		}
+	}
+	return { dir, question };
+}
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 
 export default function deepResearch(pi: ExtensionAPI) {
@@ -54,6 +73,26 @@ export default function deepResearch(pi: ExtensionAPI) {
 			}
 		} catch {
 			ctx.ui.notify("deep-research: could not check for `uvx` — arxiv + ddg-search servers need it on PATH.", "warning");
+		}
+	});
+
+	pi.on("session_start", async (_event, ctx) => {
+		try {
+			const root = path.resolve(import.meta.dir, "..");
+			const local = Bun.spawnSync(["git", "-C", root, "rev-parse", "HEAD"]);
+			if (local.exitCode !== 0) return; // not a git checkout — nothing to update
+			const remote = Bun.spawnSync(["git", "-C", root, "ls-remote", "origin", "HEAD"], { timeout: 15000 });
+			if (remote.exitCode !== 0) return; // offline — stay silent
+			const remoteSha = remote.stdout.toString().split(/\s+/, 1)[0] ?? "";
+			const localSha = local.stdout.toString().trim();
+			if (remoteSha && localSha && remoteSha !== localSha) {
+				ctx.ui.notify(
+					`deep-research: update available (${localSha.slice(0, 7)} → ${remoteSha.slice(0, 7)}) — git pull in ${root}.`,
+					"warning",
+				);
+			}
+		} catch {
+			// Offline or git missing — never nag.
 		}
 	});
 
@@ -106,22 +145,7 @@ export default function deepResearch(pi: ExtensionAPI) {
 	pi.registerCommand("followup", {
 		description: "Ask about a finished deep-research run; say 'research more' to dig deeper with the same tools.",
 		handler: async (args, ctx) => {
-			const text = args.trim();
-			let dir = await latestStateDir(ctx.cwd);
-			let question = text;
-			const first = text.split(/\s+/, 1)[0] ?? "";
-			if (first) {
-				try {
-					const candidate = path.join(ctx.cwd, "research", first, "state.md");
-					const info = await stat(candidate);
-					if (info.isFile()) {
-						dir = path.join("research", first);
-						question = text.slice(first.length).trim();
-					}
-				} catch {
-					// First word is not a run name — whole text is the question.
-				}
-			}
+			const { dir, question } = await resolveFollowupRun(ctx.cwd, args);
 			if (!dir) {
 				ctx.ui.notify("deep-research: no research/*/state.md found — run /deep-research first.", "warning");
 				return;
