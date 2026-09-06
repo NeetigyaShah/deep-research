@@ -105,6 +105,8 @@ planner_text = (ROOT / "agents/research-planner.md").read_text(encoding="utf-8")
 check("self_score" in planner_text, "planner self-scores its packs")
 readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
 check("token audit" in readme_text, "readme carries the MCP checklist")
+check("turns_this_round" in skill_text, "skill tracks turns per round")
+check("sequential_only" in (ROOT / "agents/research-planner.md").read_text(encoding="utf-8"), "planner marks sequential queries")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)

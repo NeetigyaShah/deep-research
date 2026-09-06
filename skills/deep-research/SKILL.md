@@ -47,6 +47,7 @@ target_claims: 54
 frontier_done: 31
 frontier_pending: 12
 visited_pages: 183
+turns_this_round: 31
 papers_cited: 5
 started_at: 2026-09-06T10:00:00+00:00
 finished_at: ""
@@ -55,6 +56,7 @@ status: running
 
 - `target_claims` = must-answer count × 3 (three independent kept claims each). New must-answers found mid-run raise the target — the bar never lies by shrinking the goal.
 - `status`: `running` | `complete`. Only `complete` renders 100%.
+- `turns_this_round` = model turns spent by the slowest diver that round. Track turns-per-kept-claim round over round — rising means the loop is getting less efficient, not more thorough.
 
 ## Progress (the loading bar)
 
