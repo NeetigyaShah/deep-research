@@ -15,6 +15,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python tests/check_repo.py
+      - run: python tests/test_core.py
       - run: python tests/test_progress.py
       - run: python tests/test_stats.py
       - run: python tests/test_update.py

@@ -5,25 +5,24 @@ Works anywhere git exists, on any harness; never wakes the agent.
 Exit 0 up to date, 1 update available, 2 cannot check (not a repo, offline).
 """
 
+from __future__ import annotations
+
 import argparse
-import subprocess
 import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.core import check_git_update
+from scripts.core.protocols import SubprocessGitClient
 
 
 def git(args, cwd, timeout=20):
-    try:
-        proc = subprocess.run(
-            ["git", *args],
-            cwd=str(cwd),
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    if proc.returncode != 0:
-        return None
-    return proc.stdout.strip()
+    """Retained for backwards compatibility with tests and callers."""
+    client = SubprocessGitClient()
+    return client.run_git(args, cwd, timeout=timeout)
 
 
 def main() -> int:
@@ -33,20 +32,10 @@ def main() -> int:
     parser.add_argument("--branch", default="main")
     opts = parser.parse_args()
 
-    local = git(["rev-parse", "HEAD"], opts.path)
-    if not local:
-        print(f"deep-research: cannot check updates in {opts.path} (not a git checkout?)")
-        return 2
-    remote = git(["ls-remote", opts.remote, f"refs/heads/{opts.branch}"], opts.path)
-    if not remote:
-        print("deep-research: cannot reach remote — staying silent (offline?)")
-        return 2
-    remote_sha = remote.split()[0]
-    if remote_sha == local:
-        print(f"deep-research: up to date ({local[:7]})")
-        return 0
-    print(f"deep-research: update available ({local[:7]} → {remote_sha[:7]}) — git pull in {opts.path}")
-    return 1
+    client = SubprocessGitClient()
+    result = check_git_update(git=client, path=opts.path, remote=opts.remote, branch=opts.branch)
+    print(result.message)
+    return int(result.status)
 
 
 if __name__ == "__main__":

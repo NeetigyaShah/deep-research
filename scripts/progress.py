@@ -4,49 +4,32 @@ Usage: python scripts/progress.py research/<slug>
 Works anywhere Python exists; reads only state.md, never wakes the agent.
 """
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.core import calculate_progress
+from scripts.core.protocols import FileSystemStateReader, parse_markdown_state_text
+
 
 def parse_state(path: Path) -> dict:
-    vals: dict = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if ":" in line:
-            key, value = line.split(":", 1)
-            vals[key.strip()] = value.strip()
-    return vals
+    """Retained for backwards compatibility with tests and callers."""
+    if not path.exists():
+        return {}
+    return parse_markdown_state_text(path.read_text(encoding="utf-8"))
 
 
 def main() -> None:
     run_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
-    state = parse_state(run_dir / "state.md")
-
-    def num(key: str) -> int:
-        try:
-            return int(state.get(key, 0))
-        except ValueError:
-            return 0
-
-    kept = num("kept_claims")
-    target = max(num("target_claims"), 1)
-    done = num("frontier_done")
-    pending = num("frontier_pending")
-
-    if state.get("status") == "complete":
-        pct = 100
-    else:
-        coverage = min(kept / target, 1.0)
-        drain = done / max(done + pending, 1)
-        pct = min(99, round(100 * (0.7 * coverage + 0.3 * drain)))
-
-    filled = round(pct / 5)
-    bar = "\u2588" * filled + "\u2591" * (20 - filled)
-    print(
-        f"[Research {pct}% | round {state.get('round', '?')} | "
-        f"{kept}/{state.get('target_claims', '?')} claims | "
-        f"{state.get('must_answer_covered', '?')}/{state.get('must_answer_total', '?')} questions | "
-        f"frontier {pending} | {state.get('visited_pages', '?')} pages] {bar}"
-    )
+    reader = FileSystemStateReader()
+    state = reader.read_state(run_dir / "state.md")
+    metrics = calculate_progress(state)
+    print(metrics.render())
 
 
 if __name__ == "__main__":
