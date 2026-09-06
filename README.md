@@ -43,15 +43,16 @@ an interrupted run picks up where it left off.
 
 ## What you need
 
-Only one thing: **uv** (a Python tool installer). It provides the `uvx`
-command, which downloads and runs the two search servers automatically on
-first use. Install it from
+Two things: **uv** (provides `uvx` for the arxiv and ddg-search servers)
+and **Node.js** (provides `npx` for the gutenberg books server).
+Install uv from
 https://docs.astral.sh/uv/getting-started/installation/
 
-The two servers it fetches:
+The three servers it fetches:
 
 - **arxiv** — searches and reads academic papers from arXiv.
 - **ddg-search** — searches the web through DuckDuckGo and reads pages.
+- **gutenberg** — searches 78,000+ free public-domain books and quotes passages verbatim.
 
 ## Installation
 
@@ -68,7 +69,7 @@ git clone https://github.com/NeetigyaShah/deep-research.git
 ```
 
 Then inside OMP, run `/reload-plugins` and check `/mcp list` shows
-`arxiv` and `ddg-search`.
+`arxiv`, `ddg-search`, and `gutenberg`.
 
 (On machines where symlinks work, `omp plugin link <path-to-this-folder>`
 also installs it for all projects.)
@@ -91,15 +92,14 @@ codex plugin add deep-research@deep-research
 ```
 
 This repo already contains the Codex plugin file (`.codex-plugin/`)
-with both search servers and the skill wired in.
+with all three servers and the skill wired in.
 
 ### OpenCode
 
 OpenCode reads its setup from `opencode.json` and the `.opencode/`
-folder. Merge and copy three things:
+folder. Merge the servers and copy the workflow files:
 
-```bash
-# 1. add the two servers from integrations/opencode.json
+# 1. add the three servers from integrations/opencode.json
 #    into your opencode.json under "mcp" -> "servers"
 # 2. copy the skill, command, and agents:
 cp -r skills/deep-research .opencode/skills/
@@ -207,12 +207,12 @@ quiet with guidance when offline. Exit codes: 0 current, 1 behind,
 ## What's inside
 
 ```text
-.mcp.json / mcp.json        both search servers (Claude/OMP style)
-.codex-mcp.json             both search servers (Codex style)
-integrations/opencode.json  both search servers (OpenCode style)
-integrations/cursor-mcp.json both search servers (Cursor style)
+.mcp.json / mcp.json        all three servers (Claude/OMP style)
+.codex-mcp.json             all three servers (Codex style)
+integrations/opencode.json  all three servers (OpenCode style)
+integrations/cursor-mcp.json all three servers (Cursor style)
 skills/deep-research/       the 6-step workflow (works everywhere)
-agents/                     planner, web diver, paper diver, fact checker
+agents/                     planner, web/paper/books divers, fact checker
 commands/deep-research.md   the /deep-research command
 commands/followup.md         the /followup command
 .claude-plugin/             Claude Code plugin + marketplace files

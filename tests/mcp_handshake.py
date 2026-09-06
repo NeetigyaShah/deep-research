@@ -1,4 +1,4 @@
-"""Live MCP handshake: both bundled servers initialize and list tools over stdio."""
+"""Live MCP handshake: all bundled servers initialize and list tools over stdio."""
 
 import json
 import queue
@@ -9,10 +9,11 @@ import threading
 import time
 
 SERVERS = {
-    "arxiv": ["arxiv-mcp-server"],
-    "ddg-search": ["--with", "duckduckgo-mcp-server[browser]", "duckduckgo-mcp-server"],
+    "arxiv": ("uvx", ["arxiv-mcp-server"]),
+    "ddg-search": ("uvx", ["--with", "duckduckgo-mcp-server[browser]", "duckduckgo-mcp-server"]),
+    "gutenberg": ("npx", ["-y", "@cyanheads/gutenberg-mcp-server"]),
 }
-MIN_TOOLS = {"arxiv": 10, "ddg-search": 3}
+MIN_TOOLS = {"arxiv": 10, "ddg-search": 3, "gutenberg": 3}
 TIMEOUT = 180
 
 
@@ -59,12 +60,15 @@ def notify(proc, method):
 
 
 def main():
-    uvx = shutil.which("uvx")
-    assert uvx, "uvx not on PATH"
+    runners = {}
+    for runner in {runner for runner, _ in SERVERS.values()}:
+        found = shutil.which(runner)
+        assert found, f"{runner} not on PATH"
+        runners[runner] = found
     failures = []
-    for name, args in SERVERS.items():
+    for name, (runner, args) in SERVERS.items():
         try:
-            proc, out_q = start([uvx, *args])
+            proc, out_q = start([runners[runner], *args])
             init = call(
                 proc,
                 out_q,
