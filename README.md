@@ -232,6 +232,11 @@ bump minor (`0.3.0` → `0.4.0`), merges labeled `bug` bump patch
 (`0.3.0` → `0.3.1`). A bot opens the bump PR and it merges itself once
 CI is green — never bump versions by hand in a feature PR. If your PR
 fixes a bug, add the `bug` label so it bumps patch instead of minor.
+One-time setup for zero-click operation: bot PRs opened with the default
+token need one manual approval per run. Create a fine-grained personal
+token (repository access to this repo, Contents read/write, Pull requests
+read/write), save it as the `ACTIONS_BOT_TOKEN` repo secret, and the bot
+uses it instead — CI then runs unapproved and merges finish themselves.
 
 ## Honest notes
 
