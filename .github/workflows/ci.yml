@@ -18,6 +18,7 @@ jobs:
       - run: python tests/test_progress.py
       - run: python tests/test_stats.py
       - run: python tests/test_update.py
+      - run: python tests/test_version_bump.py
 
   extension:
     runs-on: ubuntu-latest

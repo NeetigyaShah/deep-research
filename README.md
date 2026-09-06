@@ -222,7 +222,16 @@ src/main.ts                 OMP extension (status command + update + startup che
 scripts/progress.py         live progress bar from any state.md
 scripts/stats.py            end-of-run log from stats.json
 scripts/check_update.py     update check against GitHub main
+scripts/bump_version.py     version bumps across manifests
 ```
+
+## Versioning (contributors)
+
+Every merge to `main` moves the version automatically: feature merges
+bump minor (`0.3.0` → `0.4.0`), merges labeled `bug` bump patch
+(`0.3.0` → `0.3.1`). A bot opens the bump PR and it merges itself once
+CI is green — never bump versions by hand in a feature PR. If your PR
+fixes a bug, add the `bug` label so it bumps patch instead of minor.
 
 ## Honest notes
 

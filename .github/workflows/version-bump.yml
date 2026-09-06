@@ -1,0 +1,57 @@
+name: Auto version bump
+
+# Rule: every merge to main moves the version. Feature merges bump minor
+# (0.x.0 -> 0.x+1.0); merges whose PR carries the `bug` label bump patch
+# (0.0.x -> 0.0.x+1). The bot opens its own PR so branch protection still
+# applies; auto-merge finishes it once CI is green. Version-bump PRs never
+# trigger the bot again (branch/title guard below).
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.head_ref, 'version-bump/') == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Decide bump part
+        id: part
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          if echo "$LABELS" | grep -q '"bug"'; then
+            echo "part=patch" >> "$GITHUB_OUTPUT"
+          else
+            echo "part=minor" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open version-bump PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PART: ${{ steps.part.outputs.part }}
+        run: |
+          NEW_VERSION=$(python scripts/bump_version.py --part "$PART")
+          BRANCH="version-bump/$NEW_VERSION"
+          git config user.name "deep-research-bot"
+          git config user.email "deep-research-bot@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add package.json .claude-plugin/plugin.json .codex-plugin/plugin.json
+          git commit -m "Bump versions to $NEW_VERSION"
+          git push -u origin "$BRANCH"
+          PR_URL=$(gh pr create --title "Bump versions to $NEW_VERSION" \
+            --body "Automatic version bump ($PART) for the latest main merge." \
+            --base main --head "$BRANCH")
+          gh pr merge --auto --merge "$PR_URL"
