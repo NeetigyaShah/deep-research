@@ -97,6 +97,7 @@ Produce query packs from the Brief (no searching yourself):
 - `arxiv_queries[5-10]`: `ti:`/`abs:`/`cat:` + methods jargon.
 - `seed_ids[]`: arXiv IDs named by the user or from prior turns; `citation_hops: 1-2`.
 - ArXiv gate: one cheap `search_papers` first. No literature on this topic → skip the arxiv-diver entirely and say so in the report. Hits → keep the top 1–3 as a **method lens** (their methods/limitations shape how you analyze, not just facts you cite).
+- Observer review (anti-inertia): send the Brief + query packs to citation-checker in plan-attack mode — it sees ONLY those two, never any search history — and file its verdict as `research/<slug>/plan-review.md`. Advisory only: log its misses, never let it veto. Phase 3 starts only after `plan-review.md` exists.
 
 ## Phase 3 — Execute (one parallel batch)
 

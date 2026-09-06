@@ -95,6 +95,9 @@ for asset in ("scripts/progress.py", "scripts/stats.py", "scripts/check_update.p
 skill_text = (ROOT / "skills/deep-research/SKILL.md").read_text(encoding="utf-8")
 check("stats.json" in skill_text, "skill defines the stats.json end log")
 check("Phase 7" in skill_text, "skill defines the Phase 7 follow-up loop")
+check("plan-attack" in skill_text, "skill defines the observer plan review")
+checker_text = (ROOT / "agents/citation-checker.md").read_text(encoding="utf-8")
+check("Plan-attack mode" in checker_text and "plan-review.md" in checker_text, "checker defines plan-attack mode")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)
