@@ -67,7 +67,7 @@ versions = {
 }
 check(len(versions) == 1 and None not in versions, f"versions agree across manifests ({versions})")
 
-for server in ("arxiv", "ddg-search", "gutenberg"):
+for server in ("arxiv", "ddg-search", "gutenberg", "openalex"):
     for name in (".mcp.json", "mcp.json"):
         entry = parsed.get(name, {}).get("mcpServers", {}).get(server, {})
         check(bool(entry.get("command")) and bool(entry.get("args")), f"{name} defines {server} server")
@@ -81,7 +81,7 @@ for server in ("arxiv", "ddg-search", "gutenberg"):
 skill = frontmatter("skills/deep-research/SKILL.md")
 check(bool(skill and skill.get("name") and skill.get("description")), "skill has name + description frontmatter")
 
-for agent in ("research-planner", "web-diver", "arxiv-diver", "books-diver", "citation-checker"):
+for agent in ("research-planner", "web-diver", "literature-diver", "books-diver", "citation-checker"):
     fm = frontmatter(f"agents/{agent}.md")
     check(bool(fm and fm.get("name") and fm.get("description")), f"agent {agent} has name + description frontmatter")
 

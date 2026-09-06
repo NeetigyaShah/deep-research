@@ -12,8 +12,9 @@ SERVERS = {
     "arxiv": ("uvx", ["arxiv-mcp-server"]),
     "ddg-search": ("uvx", ["--with", "duckduckgo-mcp-server[browser]", "duckduckgo-mcp-server"]),
     "gutenberg": ("npx", ["-y", "@cyanheads/gutenberg-mcp-server"]),
+    "openalex": ("npx", ["-y", "openalex-research-mcp"]),
 }
-MIN_TOOLS = {"arxiv": 10, "ddg-search": 3, "gutenberg": 3}
+MIN_TOOLS = {"arxiv": 10, "ddg-search": 3, "gutenberg": 3, "openalex": 10}
 TIMEOUT = 180
 
 
