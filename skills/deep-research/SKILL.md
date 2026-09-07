@@ -72,7 +72,14 @@ Bar = 20 cells, filled = round(percent/5). `scripts/progress.py research/<slug>`
 1. **MCP Gate Check**: Verify that all 4 MCP servers (`arxiv`, `ddg-search`, `gutenberg`, `openalex`) are configured and available in your harness (`python scripts/check_mcp.py` can verify this). If even ONE MCP server or runtime (`uvx`, `npx`) is missing, STOP immediately and say to the user:
    "The deep-research plugin requires 4 MCP servers (arxiv, ddg-search, gutenberg, openalex). Missing: [<missing items>]. First install this, only then will deep-research work."
    Provide the installation command and refuse to start Phase 1 until resolved.
-2. User gives a topic. Do NOT search. Do NOT state facts. Go to Phase 1.
+2. User gives a topic or document path. Do NOT search. Do NOT state facts.
+3. **Document Ingestion Mode (Optional)**: If the user supplies a document path or multi-page feature list (`.md`, `.txt`, `.pdf` extract), run `python scripts/ingest_doc.py <doc_path> --output-dir research/<slug>` before Phase 1:
+   - Splits the document into structural pages (`evidence/00-pages/page-NN.md`), keeping tables and criteria lists intact.
+   - Extracts objectives into `objectives.md` and maps cross-page overlaps.
+   - Derives acceptance-criteria todos in `todos.md` and proves 100% coverage in `reconciliation.md`.
+   - The derived todos directly seed the must-answer questions for Phase 1/2.
+   - During Phase 3 diver dispatch: each diver receives ONLY its assigned todo and isolated context extract from `evidence/00-pages/`, preventing context window overload.
+   Go to Phase 1.
 ## Phase 1 — Grill + mirror (assert zero facts)
 
 Interview relentlessly until a shared understanding exists. Work the decision

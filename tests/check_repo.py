@@ -81,8 +81,9 @@ for server in ("arxiv", "ddg-search", "gutenberg", "openalex"):
     ag = parsed.get("integrations/antigravity-mcp.json", {}).get("mcpServers", {}).get(server, {})
     check(bool(ag.get("command")) and bool(ag.get("args")), f"integrations/antigravity-mcp.json defines {server} server")
 
-skill = frontmatter("skills/deep-research/SKILL.md")
-check(bool(skill and skill.get("name") and skill.get("description")), "skill has name + description frontmatter")
+for sk in ("deep-research", "followup"):
+    fm = frontmatter(f"skills/{sk}/SKILL.md")
+    check(bool(fm and fm.get("name") and fm.get("description")), f"skill {sk} has name + description frontmatter")
 
 for agent in ("research-planner", "web-diver", "literature-diver", "books-diver", "citation-checker"):
     fm = frontmatter(f"agents/{agent}.md")
@@ -101,8 +102,12 @@ for asset in (
     "scripts/core/models.py",
     "scripts/core/protocols.py",
     "scripts/core/operations.py",
+    "scripts/core/document.py",
+    "scripts/ingest_doc.py",
     "tests/test_core.py",
+    "tests/test_document.py",
     "commands/followup.md",
+    "skills/followup/SKILL.md",
 ):
     check((ROOT / asset).exists(), f"{asset} exists")
 
@@ -130,6 +135,7 @@ check("[thin]" in skill_text and "never round thin up" in skill_text, "skill def
 check("Exhaustive Technical Report" in skill_text, "skill defines exhaustive technical report contract")
 check("Multi-Turn Section Assembly" in skill_text, "skill defines multi-turn section assembly contract")
 check("Publication-Grade HTML Whitepaper" in skill_text, "skill defines publication-grade HTML whitepaper")
+check("Document Ingestion Mode" in skill_text, "skill defines Document Ingestion mode")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)
