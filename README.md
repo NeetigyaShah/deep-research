@@ -127,6 +127,28 @@ cp -r skills/deep-research .cursor/skills/
 Restart Cursor and confirm both servers show as connected in
 Settings → MCP.
 
+### Google Antigravity
+
+Google Antigravity reads MCP servers from `mcp_config.json` and discovers skills in `.agents/skills/` (workspace) or `~/.gemini/config/skills/` (global).
+
+```bash
+# 1. Servers:
+#    - Workspace: copy integrations/antigravity-mcp.json to .agents/mcp_config.json
+#    - Or in the Antigravity IDE: Agent Side Panel → ... → Manage MCP Servers → View raw config
+#      and paste the servers from integrations/antigravity-mcp.json
+cp integrations/antigravity-mcp.json .agents/mcp_config.json
+
+# 2. Skill and subagents:
+mkdir -p .agents/skills .agents/agents
+cp -r skills/deep-research .agents/skills/
+cp agents/*.md .agents/agents/
+```
+
+Ask Antigravity in chat or CLI:
+```text
+Run deep-research on <your topic>
+```
+Antigravity discovers the `deep-research` skill, runs the Phase 1 intake interview, and coordinates the parallel divers across the configured MCP servers.
 ## Use
 
 ```text
