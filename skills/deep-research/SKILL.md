@@ -86,8 +86,7 @@ section IS the protocol.)
 Hard output contract for every round:
 
 1. **Mirror** (1 paragraph): "You want <X>, for <audience>, to decide <Y>. Out of scope: <Z>." Every noun must trace to the user's own words. No dates, numbers, causal claims, or "as you know…" — what is not in the user's message or a tool result is a **question**, not a confirmation.
-2. **Frontier questions** (max 5 per round): goal/audience, time window, source prefs (web vs arXiv weight), output shape (report/memo/table + length) and format (`md` default; `pdf`/`doc` need conversion tooling — say so if asked).
-
+2. **Frontier questions** (max 5 per round): goal/audience, time window, source prefs (web vs arXiv weight), output shape (default is exhaustive long-form technical whitepaper with deep sub-sections and case studies; never a thin summary unless user asks for a brief memo) and format (`md` default; `html` whitepaper alongside).
 Frontier empty (or user says "proceed") → emit the **Research Brief** and continue:
 
 ```text
@@ -133,14 +132,27 @@ The loop CANNOT stop while any must-answer has zero kept claims — unless two c
 ## Phase 6 — Report + end log
 
 1. Set `finished_at` (UTC ISO `YYYY-MM-DDTHH:MM:SS+00:00`), `papers_cited` (distinct arXiv IDs used in the report), and `status: complete` in `state.md`.
-2. Write `research/<slug>/report.md`: Summary, Findings (every paragraph ends `[n]`), arXiv Deep Dive (per-paper methods/results/limits, or why arXiv had nothing), Gaps, Sources (numbered URLs), BibTeX appendix. Provenance-first: only facts carrying ledger IDs may appear — every claim is written WITH its IDs, and any sentence without one is deleted at write time, not fixed after. The Phase 4 gate stays as backstop and verifies every cited ID traces to a kept entry. Confidence: tag every finding `[thin]` (1 kept claim), `[solid]` (2), or `[strong]` (3+) from kept-claim depth — never round thin up, and let Gaps say what would close each thin item.
-3. Write `research/<slug>/stats.json`:
+2. **Write Exhaustive Technical Report (`research/<slug>/report.md`)**:
+   - **Depth & Verbosity**: Avoid executive summaries or condensed bullet points. Produce an exhaustive, detailed technical whitepaper (typically 5,000–12,000+ words). Cover each must-answer question with full technical background, historical context, underlying mechanisms, case studies, empirical metrics, trade-offs, and counter-perspectives.
+   - **Multi-Turn Section Assembly**: To bypass single-turn LLM completion token ceilings, assemble the report section-by-section (appending subsections as needed) rather than compressing into a single truncated response.
+   - **Balanced Provenance**: Every empirical claim (numbers, dates, benchmark scores, legal provisions, causal statements) MUST carry its run-unique ledger ID (`[WA1]`, `[LA3]`). The Phase 4 gate stays as backstop and mechanically verifies every cited ID traces to a kept entry. Explanatory framing, conceptual introductions, architectural walkthroughs, and comparative narrative transitions do NOT require per-sentence IDs — write cohesive, rich technical prose.
+   - **Primary Source Pull-Quotes**: Include verbatim multi-sentence blockquotes from key whitepapers, regulations, and research papers to preserve authentic source nuance.
+   - **Confidence Tags**: Tag each finding `[thin]` (1 kept claim), `[solid]` (2), or `[strong]` (3+) from kept-claim depth — never round thin up, and let Gaps say what would close each thin item.
+   - **Required Sections**: Summary & Key Findings, Detailed Thematic Deep Dives (one exhaustive section per must-answer question with comparative tables and case studies), Literature Review & Methodology Lens, Admitted Gaps & Failure Modes, Numbered Source Registry, BibTeX Appendix.
+3. **Generate Publication-Grade HTML Whitepaper (`research/<slug>/report.html`)**:
+   Render the complete report as a standalone, responsive HTML technical whitepaper:
+   - Sticky sidebar navigation with smooth anchor scrolling to all major sections and sub-sections.
+   - Clean editorial typography (1.75 line height, comfortable reading width, distinct heading scales, dark/light theme awareness).
+   - Styled callout boxes for key takeaways, verbatim primary source pull-quotes, and cautionary caveats.
+   - Rich, styled comparison tables with clear borders and headers.
+   - Color-coded confidence badges (`.badge-thin`, `.badge-solid`, `.badge-strong`) and linked citation pills `[n]` connecting directly to the source list.
+4. Write `research/<slug>/stats.json`:
 
 ```json
 {"slug": "<slug>", "started_at": "<...+00:00>", "finished_at": "<...+00:00>", "elapsed": "1h 2m 3s", "rounds": 6, "kept_claims": 58, "dropped_claims": 12, "papers_cited": ["<arXiv-id>", "..."], "papers_count": 7, "web_sources_count": 31, "visited_pages": 240, "must_answer_covered": 6, "must_answer_total": 6, "report": "research/<slug>/report.md"}
 ```
 
-4. Emit the end log. Same content in every harness — only the channel differs:
+5. Emit the end log. Same content in every harness — only the channel differs:
 
 | Harness | How the log surfaces |
 |---|---|
