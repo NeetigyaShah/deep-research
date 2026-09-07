@@ -30,10 +30,12 @@ def find_configured_servers(cwd: Path) -> Set[str]:
         cwd / ".codex-mcp.json",
         cwd / "integrations" / "opencode.json",
         cwd / "integrations" / "cursor-mcp.json",
+        cwd / "integrations" / "antigravity-mcp.json",
+        cwd / ".agents" / "mcp_config.json",
         Path.home() / ".omp" / "agent" / "config.yml",
         Path.home() / ".claude.json",
+        Path.home() / ".gemini" / "config" / "mcp_config.json",
     ]
-
     for p in candidate_paths:
         if not p.exists():
             continue

@@ -47,6 +47,7 @@ manifests = [
     ".agents/plugins/marketplace.json",
     "integrations/opencode.json",
     "integrations/cursor-mcp.json",
+    "integrations/antigravity-mcp.json",
 ]
 parsed = {}
 for name in manifests:
@@ -77,6 +78,8 @@ for server in ("arxiv", "ddg-search", "gutenberg", "openalex"):
     check(oco.get("type") == "local" and bool(oco.get("command")), f"integrations/opencode.json defines {server} server")
     cur = parsed.get("integrations/cursor-mcp.json", {}).get("mcpServers", {}).get(server, {})
     check(bool(cur.get("command")) and bool(cur.get("args")), f"integrations/cursor-mcp.json defines {server} server")
+    ag = parsed.get("integrations/antigravity-mcp.json", {}).get("mcpServers", {}).get(server, {})
+    check(bool(ag.get("command")) and bool(ag.get("args")), f"integrations/antigravity-mcp.json defines {server} server")
 
 skill = frontmatter("skills/deep-research/SKILL.md")
 check(bool(skill and skill.get("name") and skill.get("description")), "skill has name + description frontmatter")

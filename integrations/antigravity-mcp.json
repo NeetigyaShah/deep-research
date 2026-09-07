@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "arxiv": {
+      "command": "uvx",
+      "args": ["arxiv-mcp-server"]
+    },
+    "ddg-search": {
+      "command": "uvx",
+      "args": ["--with", "duckduckgo-mcp-server[browser]", "duckduckgo-mcp-server"]
+    },
+    "gutenberg": {
+      "command": "npx",
+      "args": ["-y", "@cyanheads/gutenberg-mcp-server"]
+    },
+    "openalex": {
+      "command": "npx",
+      "args": ["-y", "openalex-research-mcp"]
+    }
+  }
+}
