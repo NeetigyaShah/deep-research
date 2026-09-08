@@ -1,10 +1,10 @@
 # Deep Research
 
 A research assistant that lives inside your AI coding tool. You give it a
-topic. It asks you what you actually want, searches hundreds of web pages
-and academic papers, checks every fact against its source, and hands you a
-report with citations. Like the Deep Research features in ChatGPT and
-Gemini, but running in your own setup.
+topic. It asks you what you actually want, agrees explicit goals with you,
+searches hundreds of web pages and academic papers, and hands you a plain
+white-paper HTML report answering every goal. Like the Deep Research
+features in ChatGPT and Gemini, but running in your own setup.
 
 ## How it works
 
@@ -22,19 +22,17 @@ Gemini, but running in your own setup.
    it reads the actual sections of the most relevant papers (not just
    abstracts) and follows their citations. If your topic has no academic
    literature, it skips that part and tells you.
-5. **It checks every fact.** A separate pass keeps a claim only if there
-   is a direct quote from a trustworthy source behind it — an official
-   document, specification, or paper section. Anything unverified is
-   dropped. Numbers, dates, and cause-and-effect claims without a source
-   never reach the report.
-6. **It keeps going until done.** It compares what it found against the
-   questions from step 2 and sends agents back out for the gaps, following
-   up on promising leads. It stops when a full round of searching adds
-   almost nothing new, or when you tell it to stop. Whatever is still
-   unknown is listed under Gaps instead of being made up.
-7. **You get a report.** A Markdown file with a summary, findings (every
-   paragraph cited), a papers section, gaps, a source list, and
-   ready-to-use citations.
+5. **It notes every source once.** Each fetched page is read a single time
+   and its URL recorded alongside the finding — no re-fetching, no
+   re-verification passes.
+6. **It keeps going until done.** It compares what it found against your
+   goals and sends agents back out for the gaps, following up on promising
+   leads. It stops when every goal meets its done-criteria, or when you
+   tell it to stop. Whatever is still unknown is listed under Gaps instead
+   of being made up.
+7. **You get a report.** One plain white HTML page in research-paper
+   layout: title, abstract, one section answering each goal, method notes,
+   gaps, and a plain list of source links.
 
 Everything runs on your main AI model, for as many rounds as the topic
 needs. A hard question takes roughly half an hour to an hour and a half.
@@ -161,9 +159,8 @@ Answer its questions, approve the plan, come back later for the report.
 You can also invoke the skill directly where your tool supports it
 (`/skill:deep-research <topic>` in OMP).
 
-When it asks for output format: `md` (default) always works. `pdf` and
-`doc` need extra conversion software installed — it will tell you.
-While it works, every round ends with a progress line like
+The report is always a single plain white-paper HTML file. While it works,
+every round ends with a progress line like
 `[Research 62% | round 4 | 41/54 claims | 4/6 questions | frontier 12 |
 183 pages] ████████████░░░░░░░░`. Percent = mostly facts-found versus
 target, partly leads worked through — capped at 99% until the report is
@@ -176,14 +173,14 @@ Every run ends with a log like this — same numbers in every tool,
 only the place you see it changes:
 
 ```text
-[Research done] carbon-credits — 6/6 questions, 58 kept claims
+[Research done] carbon-credits — 6/6 goals, 58 findings
   Time: 1h 2m 3s (… → … UTC) | Rounds: 6 | Pages: 240
-  Papers cited: 7 | Web sources: 31 | Dropped: 12
-  Report: research/carbon-credits/report.md
+  Papers cited: 7 | Web sources: 31
+  Report: research/carbon-credits/report.html
 ```
 
-That's papers cited, web sources, checked facts kept and dropped, and
-total time from start to finish. In OMP it prints in chat and
+That's goals answered, findings gathered, and total time from start to
+finish. In OMP it prints in chat and
 `/deep-research-status` shows it on demand. Everywhere else it prints
 in chat and `python scripts/stats.py research/<topic>` reprints it in
 any terminal.
@@ -195,24 +192,23 @@ any terminal.
 /followup carbon-credits how is biomass treated?
 ```
 
-It answers from the facts it already checked, reusing the report's
-citations — no new searching, no new interview. If the answer isn't in
-there, it says exactly what is missing and what it would search next.
-Reply `research more` and it digs deeper with the same tools, checks
-the new facts, updates the report, and prints a fresh end log. The
-original brief is never rewritten; every follow-up is appended to
-`followups.md` so you can see what was asked and what changed.
+It answers from the learnings it already gathered, pointing at the
+report's sections — no new searching, no new interview. If the answer
+isn't in there, it says exactly what is missing and what it would search
+next. Reply `research more` and it digs deeper with the same tools and
+updates the report, printing a fresh end log. The original goal contract
+is never rewritten; every follow-up is appended to `followups.md` so you
+can see what was asked and what changed.
 
 ## The loop (why it doesn't quit early)
 
-Each run keeps score in `research/<topic>/state.md`: how many questions
-are covered, how many checked facts exist versus the target (3 per
-question), and how many leads are still queued. A round that leaves any
-question with zero facts behind is not allowed to be the last one —
-unless two full rounds in a row find nothing new anywhere, which means
-the topic is dry and the rest goes under Gaps. If the search keeps
-repeating itself, the agents are forced to rephrase before trying again.
-You can stop it anytime; it reports from what it has.
+Each run keeps score in `research/<topic>/state.md`: how many goals are
+answered and how many leads are still queued. A round that leaves any goal
+unanswered is not allowed to be the last one — unless two full rounds in
+a row find nothing new anywhere, which means the topic is dry and the rest
+goes under Gaps. If the search keeps repeating itself, the agents are
+forced to rephrase before trying again. You can stop it anytime; it
+reports from what it has.
 
 ## Staying updated
 
@@ -235,10 +231,9 @@ quiet with guidance when offline. Exit codes: 0 current, 1 behind,
 .codex-mcp.json             all four servers (Codex style)
 integrations/opencode.json  all four servers (OpenCode style)
 integrations/cursor-mcp.json all four servers (Cursor style)
-skills/deep-research/       the 6-step workflow (works everywhere)
-agents/                     planner, web/lit/books divers, fact checker
-commands/deep-research.md   the /deep-research command
-commands/followup.md         the /followup command
+skills/deep-research/       the goal-driven workflow (works everywhere)
+skills/followup/            follow-up questions from learnings (works everywhere)
+agents/                     planner, web/lit/books divers (single-fetch, source noted once)
 .claude-plugin/             Claude Code plugin + marketplace files
 .codex-plugin/              Codex plugin file
 .agents/                    agent-plugins marketplace file

@@ -124,7 +124,7 @@ def compile_run_stats(
     pages = stats_dict.get("visited_pages", state_raw.get("visited_pages", "?"))
     covered = stats_dict.get("must_answer_covered", state_raw.get("must_answer_covered", "?"))
     total = stats_dict.get("must_answer_total", state_raw.get("must_answer_total", "?"))
-    report = stats_dict.get("report", str(run_dir / "report.md"))
+    report = stats_dict.get("report", str(run_dir / "report.html"))
 
     tag = "Research done" if complete else "Research running"
     return RunStats(
@@ -148,9 +148,9 @@ def compile_run_stats(
 def format_run_stats(stats: RunStats) -> str:
     """Format RunStats into the standard terminal block."""
     lines = [
-        f"[{stats.status_tag}] {stats.slug} — {stats.must_answer_covered}/{stats.must_answer_total} questions, {stats.kept_claims} kept claims",
+        f"[{stats.status_tag}] {stats.slug} — {stats.must_answer_covered}/{stats.must_answer_total} goals, {stats.kept_claims} findings",
         f"  Time: {stats.elapsed} ({stats.time_span}) | Rounds: {stats.rounds} | Pages: {stats.pages}",
-        f"  Papers cited: {stats.papers_count} | Web sources: {stats.web_sources_count} | Dropped: {stats.dropped_claims}",
+        f"  Papers cited: {stats.papers_count} | Web sources: {stats.web_sources_count}",
         f"  Report: {stats.report_path}",
     ]
     if not stats.is_complete:

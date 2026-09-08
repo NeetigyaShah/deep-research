@@ -193,7 +193,7 @@ def test_stats_compilation_and_formatting() -> None:
         "visited_pages": 240,
         "must_answer_covered": 6,
         "must_answer_total": 6,
-        "report": "research/demo/report.md",
+        "report": "research/demo/report.html",
     }
 
     compiled = compile_run_stats(slug="demo", run_dir=run_dir, state=state, stats=stats_data)
@@ -203,7 +203,7 @@ def test_stats_compilation_and_formatting() -> None:
     assert compiled.papers_count == 7
 
     rendered = format_run_stats(compiled)
-    assert "[Research done] demo — 6/6 questions, 58 kept claims" in rendered
+    assert "[Research done] demo — 6/6 goals, 58 findings" in rendered
     assert "Time: 1h 2m 3s" in rendered
     assert "(in progress" not in rendered
 

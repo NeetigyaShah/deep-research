@@ -85,7 +85,7 @@ for sk in ("deep-research", "followup"):
     fm = frontmatter(f"skills/{sk}/SKILL.md")
     check(bool(fm and fm.get("name") and fm.get("description")), f"skill {sk} has name + description frontmatter")
 
-for agent in ("research-planner", "web-diver", "literature-diver", "books-diver", "citation-checker"):
+for agent in ("research-planner", "web-diver", "literature-diver", "books-diver"):
     fm = frontmatter(f"agents/{agent}.md")
     check(bool(fm and fm.get("name") and fm.get("description")), f"agent {agent} has name + description frontmatter")
 
@@ -102,10 +102,7 @@ for asset in (
     "scripts/core/models.py",
     "scripts/core/protocols.py",
     "scripts/core/operations.py",
-    "scripts/core/document.py",
-    "scripts/ingest_doc.py",
     "tests/test_core.py",
-    "tests/test_document.py",
     "commands/followup.md",
     "skills/followup/SKILL.md",
 ):
@@ -115,27 +112,24 @@ skill_text = (ROOT / "skills/deep-research/SKILL.md").read_text(encoding="utf-8"
 check("MCP Gate Check" in skill_text, "skill defines Phase 0 MCP gate check")
 check("built-in `web_search`" in skill_text or "internet search tool" in skill_text, "skill defines internet search fallback")
 check("stats.json" in skill_text, "skill defines the stats.json end log")
-check("Phase 7" in skill_text, "skill defines the Phase 7 follow-up loop")
-check("plan-attack" in skill_text, "skill defines the observer plan review")
-checker_text = (ROOT / "agents/citation-checker.md").read_text(encoding="utf-8")
-check("Plan-attack mode" in checker_text and "plan-review.md" in checker_text, "checker defines plan-attack mode")
-check("peer verifier" in checker_text and "Textual Grounding" in checker_text, "checker defines cross-diver peer verification")
-check("Cross-Diver Peer Validation" in skill_text, "skill defines Phase 4 cross-diver peer validation")
-check("ledger ID" in skill_text and "backstop" in skill_text, "skill defines provenance-first synthesis with gate backstop")
+check("Phase 6" in skill_text, "skill defines the Phase 6 follow-up loop")
+check("goal contract" in skill_text, "skill defines the goal contract")
+check("learnings.md" in skill_text, "skill defines lean learnings memory")
+check("visited-urls.md" in skill_text, "skill defines visited-urls memory")
+check("questions-next.md" in skill_text, "skill defines goal-carrying questions")
+check("Fetch each source ONCE" in skill_text, "skill defines single-fetch rule")
+check("re-invoke generation" in skill_text, "skill defines auto-continue synthesis")
+check("white-paper HTML" in skill_text, "skill defines white-paper HTML report")
+check("whole first" in skill_text, "skill defines whole-PDF-first rule")
 check("Split-debug" in skill_text, "skill defines the split-debug rule")
 check("decisions.md" in skill_text, "skill defines auto-captured decisions")
 planner_text = (ROOT / "agents/research-planner.md").read_text(encoding="utf-8")
 check("self_score" in planner_text, "planner self-scores its packs")
+check("open_questions" in planner_text, "planner carries open questions")
 readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
 check("token audit" in readme_text, "readme carries the MCP checklist")
 check("turns_this_round" in skill_text, "skill tracks turns per round")
 check("sequential_only" in (ROOT / "agents/research-planner.md").read_text(encoding="utf-8"), "planner marks sequential queries")
-check((ROOT / "evals/README.md").exists() and (ROOT / "evals/seed-questions.md").exists(), "evals loop and seed set exist")
-check("[thin]" in skill_text and "never round thin up" in skill_text, "skill defines confidence tags")
-check("Exhaustive Technical Report" in skill_text, "skill defines exhaustive technical report contract")
-check("Multi-Turn Section Assembly" in skill_text, "skill defines multi-turn section assembly contract")
-check("Publication-Grade HTML Whitepaper" in skill_text, "skill defines publication-grade HTML whitepaper")
-check("Document Ingestion Mode" in skill_text, "skill defines Document Ingestion mode")
 
 print(f"\n{len(FAILURES)} failures")
 sys.exit(1 if FAILURES else 0)
