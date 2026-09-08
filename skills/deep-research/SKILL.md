@@ -55,9 +55,6 @@ needed — a human reading the folder top to bottom understands the run.
 `state.md` schema (`key: value`, one per line):
 
 ```text
-`state.md` schema (`key: value`, one per line):
-
-```text
 round: 4
 goals_total: 6
 goals_answered: 4
