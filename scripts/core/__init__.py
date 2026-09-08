@@ -22,18 +22,6 @@ from .operations import (
     compile_run_stats,
     format_run_stats,
 )
-from .document import (
-    DocumentPage,
-    ObjectiveItem,
-    ReconciliationReport,
-    TodoItem,
-    derive_todos,
-    extract_objectives_from_page,
-    ingest_document,
-    map_overlaps_and_deduplicate,
-    reconcile_coverage,
-    split_into_pages,
-)
 from .protocols import GitClient, ManifestStore, StateReader
 
 __all__ = [
@@ -51,14 +39,4 @@ __all__ = [
     "StateReader",
     "ManifestStore",
     "GitClient",
-    "DocumentPage",
-    "ObjectiveItem",
-    "TodoItem",
-    "ReconciliationReport",
-    "split_into_pages",
-    "extract_objectives_from_page",
-    "map_overlaps_and_deduplicate",
-    "derive_todos",
-    "reconcile_coverage",
-    "ingest_document",
 ]

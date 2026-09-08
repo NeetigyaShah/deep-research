@@ -46,15 +46,15 @@ STATS = {
     "visited_pages": 240,
     "must_answer_covered": 6,
     "must_answer_total": 6,
-    "report": "research/demo/report.md",
+    "report": "research/demo/report.html",
 }
 
 done = run_state({"state.md": STATE, "stats.json": json.dumps(STATS)})
 assert done.returncode == 0, done.stderr
-assert "[Research done] demo — 6/6 questions, 58 kept claims" in done.stdout, done.stdout
+assert "[Research done] demo — 6/6 goals, 58 findings" in done.stdout, done.stdout
 assert "Time: 1h 2m 3s (2026-09-06T10:00:00+00:00 → 2026-09-06T11:02:03+00:00 UTC)" in done.stdout, done.stdout
-assert "Papers cited: 7 | Web sources: 31 | Dropped: 12" in done.stdout, done.stdout
-assert "Report: research/demo/report.md" in done.stdout, done.stdout
+assert "Papers cited: 7 | Web sources: 31" in done.stdout, done.stdout
+assert "Report: research/demo/report.html" in done.stdout, done.stdout
 print("ok   finished run renders full end log")
 
 partial = run_state(
