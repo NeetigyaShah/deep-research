@@ -25,8 +25,8 @@ from .protocols import GitClient, ManifestStore
 
 def calculate_progress(state: ResearchState) -> ProgressMetrics:
     """Compute progress metrics and visual progress bar from ResearchState."""
-    kept = state.kept_claims
-    target = max(state.target_claims, 1)
+    kept = state.findings
+    target = max(state.target_findings, 1)
     done = state.frontier_done
     pending = state.frontier_pending
 
@@ -48,10 +48,10 @@ def calculate_progress(state: ResearchState) -> ProgressMetrics:
         unfilled_bars=unfilled,
         bar=bar,
         round=raw.get("round", state.round),
-        kept_claims=kept,
-        target_claims=raw.get("target_claims", state.target_claims),
-        must_answer_covered=raw.get("must_answer_covered", state.must_answer_covered),
-        must_answer_total=raw.get("must_answer_total", state.must_answer_total),
+        findings=kept,
+        target_findings=raw.get("target_findings", state.target_findings),
+        goals_answered=raw.get("goals_answered", state.goals_answered),
+        goals_total=raw.get("goals_total", state.goals_total),
         frontier_pending=pending,
         visited_pages=raw.get("visited_pages", state.visited_pages),
     )
@@ -109,8 +109,8 @@ def compile_run_stats(
     else:
         elapsed, span = "?", "?"
 
-    kept = stats_dict.get("kept_claims", state_raw.get("kept_claims", "?"))
-    dropped = stats_dict.get("dropped_claims", state_raw.get("dropped_claims", "?"))
+    kept = stats_dict.get("findings", state_raw.get("findings", "?"))
+    dropped = stats_dict.get("dropped_findings", state_raw.get("dropped_findings", "?"))
 
     papers = stats_dict.get("papers_cited", [])
     if isinstance(papers, list):
@@ -122,8 +122,8 @@ def compile_run_stats(
     web = stats_dict.get("web_sources_count", "?")
     rounds = stats_dict.get("rounds", state_raw.get("round", "?"))
     pages = stats_dict.get("visited_pages", state_raw.get("visited_pages", "?"))
-    covered = stats_dict.get("must_answer_covered", state_raw.get("must_answer_covered", "?"))
-    total = stats_dict.get("must_answer_total", state_raw.get("must_answer_total", "?"))
+    covered = stats_dict.get("goals_answered", state_raw.get("goals_answered", "?"))
+    total = stats_dict.get("goals_total", state_raw.get("goals_total", "?"))
     report = stats_dict.get("report", str(run_dir / "report.html"))
 
     tag = "Research done" if complete else "Research running"
@@ -137,10 +137,10 @@ def compile_run_stats(
         pages=pages,
         papers_count=papers_count,
         web_sources_count=web,
-        kept_claims=kept,
-        dropped_claims=dropped,
-        must_answer_covered=covered,
-        must_answer_total=total,
+        findings=kept,
+        dropped_findings=dropped,
+        goals_answered=covered,
+        goals_total=total,
         report_path=report,
     )
 
@@ -148,7 +148,7 @@ def compile_run_stats(
 def format_run_stats(stats: RunStats) -> str:
     """Format RunStats into the standard terminal block."""
     lines = [
-        f"[{stats.status_tag}] {stats.slug} — {stats.must_answer_covered}/{stats.must_answer_total} goals, {stats.kept_claims} findings",
+        f"[{stats.status_tag}] {stats.slug} — {stats.goals_answered}/{stats.goals_total} goals, {stats.findings} findings",
         f"  Time: {stats.elapsed} ({stats.time_span}) | Rounds: {stats.rounds} | Pages: {stats.pages}",
         f"  Papers cited: {stats.papers_count} | Web sources: {stats.web_sources_count}",
         f"  Report: {stats.report_path}",

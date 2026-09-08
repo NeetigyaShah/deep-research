@@ -43,14 +43,14 @@ class ResearchState:
     """Domain representation of research/<slug>/state.md."""
 
     round: int = 0
-    target_claims: int = 1
-    kept_claims: int = 0
-    dropped_claims: int = 0
+    target_findings: int = 1
+    findings: int = 0
+    dropped_findings: int = 0
     frontier_done: int = 0
     frontier_pending: int = 0
     visited_pages: int = 0
-    must_answer_covered: int = 0
-    must_answer_total: int = 0
+    goals_answered: int = 0
+    goals_total: int = 0
     status: str = "running"
     started_at: str = ""
     finished_at: str = ""
@@ -67,21 +67,21 @@ class ResearchState:
             except (ValueError, TypeError):
                 return default
 
-        target = _int("target_claims", 1)
+        target = _int("target_findings", 1)
         if target <= 0:
             target = 1
 
         raw = {str(k): str(v) for k, v in data.items()}
         return cls(
             round=_int("round", 0),
-            target_claims=target,
-            kept_claims=_int("kept_claims", 0),
-            dropped_claims=_int("dropped_claims", 0),
+            target_findings=target,
+            findings=_int("findings", 0),
+            dropped_findings=_int("dropped_findings", 0),
             frontier_done=_int("frontier_done", 0),
             frontier_pending=_int("frontier_pending", 0),
             visited_pages=_int("visited_pages", 0),
-            must_answer_covered=_int("must_answer_covered", 0),
-            must_answer_total=_int("must_answer_total", 0),
+            goals_answered=_int("goals_answered", 0),
+            goals_total=_int("goals_total", 0),
             status=str(data.get("status", "running")),
             started_at=str(data.get("started_at", "")),
             finished_at=str(data.get("finished_at", "")),
@@ -102,18 +102,18 @@ class ProgressMetrics:
     unfilled_bars: int
     bar: str
     round: int | str
-    kept_claims: int | str
-    target_claims: int | str
-    must_answer_covered: int | str
-    must_answer_total: int | str
+    findings: int | str
+    target_findings: int | str
+    goals_answered: int | str
+    goals_total: int | str
     frontier_pending: int | str
     visited_pages: int | str
 
     def render(self) -> str:
         return (
             f"[Research {self.percentage}% | round {self.round} | "
-            f"{self.kept_claims}/{self.target_claims} claims | "
-            f"{self.must_answer_covered}/{self.must_answer_total} questions | "
+            f"{self.findings}/{self.target_findings} findings | "
+            f"{self.goals_answered}/{self.goals_total} goals | "
             f"frontier {self.frontier_pending} | {self.visited_pages} pages] {self.bar}"
         )
 
@@ -131,10 +131,10 @@ class RunStats:
     pages: int | str
     papers_count: int | str
     web_sources_count: int | str
-    kept_claims: int | str
-    dropped_claims: int | str
-    must_answer_covered: int | str
-    must_answer_total: int | str
+    findings: int | str
+    dropped_findings: int | str
+    goals_answered: int | str
+    goals_total: int | str
     report_path: str
 
 

@@ -55,14 +55,15 @@ needed — a human reading the folder top to bottom understands the run.
 `state.md` schema (`key: value`, one per line):
 
 ```text
+`state.md` schema (`key: value`, one per line):
+
+```text
 round: 4
 goals_total: 6
 goals_answered: 4
-must_answer_total: 6
-must_answer_covered: 4
-kept_claims: 41
-dropped_claims: 9
-target_claims: 54
+findings: 41
+dropped_findings: 9
+target_findings: 54
 frontier_done: 31
 frontier_pending: 12
 visited_pages: 183
@@ -74,13 +75,10 @@ status: running
 ```
 
 - `status`: `running` | `complete`. Only `complete` renders 100%.
-- `turns_this_round` = model turns spent by the slowest diver that round. Track turns-per-finding round over round — rising means the loop is getting less efficient, not more thorough.
+Percent = `0.7 × findings/target + 0.3 × frontier_done/(done+pending)`, whole percent, capped at 99 while `status: running`. Coverage weighs most, queue-drain the rest — an honest estimate, not a timer. After every round the coordinator prints exactly:
 
-## Progress (the loading bar)
+`[Research 62% | round 4 | 41/54 findings | 4/6 goals | frontier 12 | 183 pages] ████████████░░░░░░░░`
 
-Percent = `0.7 × kept/target + 0.3 × frontier_done/(done+pending)`, whole percent, capped at 99 while `status: running`. Coverage weighs most, queue-drain the rest — an honest estimate, not a timer. After every round the coordinator prints exactly:
-
-`[Research 62% | round 4 | 41/54 claims | 4/6 questions | frontier 12 | 183 pages] ████████████░░░░░░░░`
 
 Bar = 20 cells, filled = round(percent/5). `scripts/progress.py research/<slug>` prints the same line from `state.md` — run it anytime, in any harness, for a live reading without waking the coordinator.
 
@@ -89,7 +87,7 @@ Bar = 20 cells, filled = round(percent/5). `scripts/progress.py research/<slug>`
 1. **MCP Gate Check**: Verify that all 4 MCP servers (`arxiv`, `ddg-search`, `gutenberg`, `openalex`) are configured and available in your harness (`python scripts/check_mcp.py` can verify this). If even ONE MCP server or runtime (`uvx`, `npx`) is missing, STOP immediately and say to the user:
    "The deep-research plugin requires 4 MCP servers (arxiv, ddg-search, gutenberg, openalex). Missing: [<missing items>]. First install this, only then will deep-research work."
    Provide the installation command and refuse to start Phase 1 until resolved.
-2. User gives a topic or document path. Do NOT search. Do NOT state facts. Go to Phase 1.
+2. User gives a topic. Do NOT search. Do NOT state facts. Go to Phase 1.
 
 ## Phase 1 — Grill + mirror (assert zero facts)
 

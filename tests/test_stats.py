@@ -26,8 +26,8 @@ def run_state(files):
 
 
 STATE = (
-    "round: 6\nmust_answer_total: 6\nmust_answer_covered: 6\n"
-    "kept_claims: 58\ndropped_claims: 12\ntarget_claims: 54\n"
+    "round: 6\ngoals_total: 6\ngoals_answered: 6\n"
+    "findings: 58\ndropped_findings: 12\ntarget_findings: 54\n"
     "frontier_done: 44\nfrontier_pending: 0\nvisited_pages: 240\n"
     "papers_cited: 7\nstarted_at: 2026-09-06T10:00:00+00:00\n"
     'finished_at: 2026-09-06T11:02:03+00:00\nstatus: complete\n'
@@ -38,14 +38,14 @@ STATS = {
     "finished_at": "2026-09-06T11:02:03+00:00",
     "elapsed": "1h 2m 3s",
     "rounds": 6,
-    "kept_claims": 58,
-    "dropped_claims": 12,
+    "findings": 58,
+    "dropped_findings": 12,
     "papers_cited": ["2509.13312", "2601.05960"],
     "papers_count": 7,
     "web_sources_count": 31,
     "visited_pages": 240,
-    "must_answer_covered": 6,
-    "must_answer_total": 6,
+    "goals_answered": 6,
+    "goals_total": 6,
     "report": "research/demo/report.html",
 }
 
@@ -60,8 +60,8 @@ print("ok   finished run renders full end log")
 partial = run_state(
     {
         "state.md": (
-            "round: 2\nmust_answer_total: 5\nmust_answer_covered: 1\n"
-            "kept_claims: 9\ntarget_claims: 15\nfrontier_done: 12\n"
+            "round: 2\ngoals_total: 5\ngoals_answered: 1\n"
+            "findings: 9\ntarget_findings: 15\nfrontier_done: 12\n"
             "frontier_pending: 18\nvisited_pages: 40\npapers_cited: 0\n"
             "started_at: 2026-09-06T10:00:00+00:00\n"
             'finished_at: ""\nstatus: running\n'

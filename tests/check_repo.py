@@ -39,7 +39,6 @@ def frontmatter(path):
 manifests = [
     "package.json",
     ".mcp.json",
-    "mcp.json",
     ".codex-mcp.json",
     ".claude-plugin/plugin.json",
     ".claude-plugin/marketplace.json",
@@ -69,9 +68,8 @@ versions = {
 check(len(versions) == 1 and None not in versions, f"versions agree across manifests ({versions})")
 
 for server in ("arxiv", "ddg-search", "gutenberg", "openalex"):
-    for name in (".mcp.json", "mcp.json"):
-        entry = parsed.get(name, {}).get("mcpServers", {}).get(server, {})
-        check(bool(entry.get("command")) and bool(entry.get("args")), f"{name} defines {server} server")
+    entry = parsed.get(".mcp.json", {}).get("mcpServers", {}).get(server, {})
+    check(bool(entry.get("command")) and bool(entry.get("args")), f".mcp.json defines {server} server")
     flat = parsed.get(".codex-mcp.json", {}).get(server, {})
     check(bool(flat.get("command")) and bool(flat.get("args")), f".codex-mcp.json defines {server} server")
     oco = parsed.get("integrations/opencode.json", {}).get("mcp", {}).get("servers", {}).get(server, {})

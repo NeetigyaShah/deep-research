@@ -161,10 +161,10 @@ You can also invoke the skill directly where your tool supports it
 
 The report is always a single plain white-paper HTML file. While it works,
 every round ends with a progress line like
-`[Research 62% | round 4 | 41/54 claims | 4/6 questions | frontier 12 |
-183 pages] ████████████░░░░░░░░`. Percent = mostly facts-found versus
-target, partly leads worked through — capped at 99% until the report is
-done. Check anytime without disturbing it: `python scripts/progress.py
+`[Research 62% | round 4 | 41/54 findings | 4/6 goals | frontier 12 |
+183 pages] ████████████░░░░░░░░`. Percent = mostly findings gathered
+versus target, partly leads worked through — capped at 99% until the
+report is done. Check anytime without disturbing it: `python scripts/progress.py
 research/<topic>` in any terminal, or `/deep-research-status` in OMP.
 
 ## When it finishes (the end log)
@@ -227,10 +227,11 @@ quiet with guidance when offline. Exit codes: 0 current, 1 behind,
 ## What's inside
 
 ```text
-.mcp.json / mcp.json        all four servers (Claude/OMP style)
+.mcp.json                    all four servers (Claude/OMP style)
 .codex-mcp.json             all four servers (Codex style)
 integrations/opencode.json  all four servers (OpenCode style)
 integrations/cursor-mcp.json all four servers (Cursor style)
+integrations/antigravity-mcp.json all four servers (Antigravity style)
 skills/deep-research/       the goal-driven workflow (works everywhere)
 skills/followup/            follow-up questions from learnings (works everywhere)
 agents/                     planner, web/lit/books divers (single-fetch, source noted once)
