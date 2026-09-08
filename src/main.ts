@@ -3,8 +3,8 @@ import path from "node:path";
 
 function progressLine(vals: Record<string, string>): string {
 	const num = (key: string): number => Number.parseInt(vals[key] ?? "", 10) || 0;
-	const kept = num("kept_claims");
-	const target = Math.max(num("target_claims"), 1);
+	const kept = num("findings");
+	const target = Math.max(num("target_findings"), 1);
 	const done = num("frontier_done");
 	const pending = num("frontier_pending");
 	let pct: number;
@@ -17,7 +17,7 @@ function progressLine(vals: Record<string, string>): string {
 	}
 	const filled = Math.round(pct / 5);
 	const bar = "█".repeat(filled) + "░".repeat(20 - filled);
-	return `[Research ${pct}% | round ${vals["round"] ?? "?"} | ${kept}/${vals["target_claims"] ?? "?"} claims | ${vals["must_answer_covered"] ?? "?"}/${vals["must_answer_total"] ?? "?"} questions | frontier ${pending} | ${vals["visited_pages"] ?? "?"} pages] ${bar}`;
+	return `[Research ${pct}% | round ${vals["round"] ?? "?"} | ${kept}/${vals["target_findings"] ?? "?"} findings | ${vals["goals_answered"] ?? "?"}/${vals["goals_total"] ?? "?"} goals | frontier ${pending} | ${vals["visited_pages"] ?? "?"} pages] ${bar}`;
 }
 
 async function latestStateDir(cwd: string): Promise<string | null> {

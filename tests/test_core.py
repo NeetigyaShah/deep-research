@@ -131,10 +131,10 @@ def test_manifest_store_stub_bump() -> None:
 def test_research_state_parsing_and_progress() -> None:
     text = (
         "round: 4\n"
-        "must_answer_total: 6\n"
-        "must_answer_covered: 4\n"
-        "kept_claims: 41\n"
-        "target_claims: 54\n"
+        "goals_total: 6\n"
+        "goals_answered: 4\n"
+        "findings: 41\n"
+        "target_findings: 54\n"
         "frontier_done: 31\n"
         "frontier_pending: 12\n"
         "visited_pages: 183\n"
@@ -144,14 +144,14 @@ def test_research_state_parsing_and_progress() -> None:
     state = ResearchState.from_dict(raw)
     assert not state.is_complete
     assert state.round == 4
-    assert state.target_claims == 54
+    assert state.target_findings == 54
 
     metrics = calculate_progress(state)
     assert metrics.percentage == 75
     assert metrics.filled_bars == 15
     assert metrics.unfilled_bars == 5
     assert metrics.bar == "\u2588" * 15 + "\u2591" * 5
-    assert "[Research 75% | round 4 | 41/54 claims |" in metrics.render()
+    assert "[Research 75% | round 4 | 41/54 findings |" in metrics.render()
 
     # Complete run renders 100%
     state.status = "complete"
@@ -168,11 +168,11 @@ def test_stats_compilation_and_formatting() -> None:
     run_dir = Path("/tmp/research/demo")
     state = ResearchState.from_dict({
         "round": "6",
-        "must_answer_total": "6",
-        "must_answer_covered": "6",
-        "kept_claims": "58",
-        "dropped_claims": "12",
-        "target_claims": "54",
+        "goals_total": "6",
+        "goals_answered": "6",
+        "findings": "58",
+        "dropped_findings": "12",
+        "target_findings": "54",
         "frontier_done": "44",
         "frontier_pending": "0",
         "visited_pages": "240",
@@ -185,14 +185,14 @@ def test_stats_compilation_and_formatting() -> None:
         "started_at": "2026-09-06T10:00:00+00:00",
         "finished_at": "2026-09-06T11:02:03+00:00",
         "rounds": 6,
-        "kept_claims": 58,
-        "dropped_claims": 12,
+        "findings": 58,
+        "dropped_findings": 12,
         "papers_cited": ["2509.13312", "2601.05960"],
         "papers_count": 7,
         "web_sources_count": 31,
         "visited_pages": 240,
-        "must_answer_covered": 6,
-        "must_answer_total": 6,
+        "goals_answered": 6,
+        "goals_total": 6,
         "report": "research/demo/report.html",
     }
 
@@ -210,9 +210,9 @@ def test_stats_compilation_and_formatting() -> None:
     # In-progress run formatting
     in_progress_state = ResearchState.from_dict({
         "round": "2",
-        "must_answer_total": "5",
-        "must_answer_covered": "2",
-        "kept_claims": "15",
+        "goals_total": "5",
+        "goals_answered": "2",
+        "findings": "15",
         "status": "running",
         "started_at": "2026-09-06T10:00:00+00:00",
     })

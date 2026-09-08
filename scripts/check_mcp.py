@@ -26,7 +26,6 @@ def find_configured_servers(cwd: Path) -> Set[str]:
     candidate_paths = [
         cwd / ".omp" / "mcp.json",
         cwd / ".mcp.json",
-        cwd / "mcp.json",
         cwd / ".codex-mcp.json",
         cwd / "integrations" / "opencode.json",
         cwd / "integrations" / "cursor-mcp.json",
